@@ -27,7 +27,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Clientes', icon: 'pi pi-fw pi-users',
                         items: [
                             {
-                                label: 'Cadastro de Clientes', icon: 'pi pi-fw pi-users',
+                                label: 'Cadastro de Clientes', icon: 'pi pi-fw pi-users', routerLink: ['clientes/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório de clientes', icon: 'pi pi-fw pi-file-pdf',
