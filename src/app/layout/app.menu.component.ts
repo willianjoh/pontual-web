@@ -23,132 +23,92 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Clientes',
                 items: [
-                    { label: 'Cadastrar Cliente', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
+                    {
+                        label: 'Clientes', icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            {
+                                label: 'Cadastro de Clientes', icon: 'pi pi-fw pi-bookmark',
+                            },
+                            {
+                                label: 'Emitir relatório de clientes', icon: 'pi pi-fw pi-bookmark',
+                            },
+                        ]
+                    }
                 ]
             },
             {
                 label: 'Produtos',
                 items: [
-                    { label: 'Cadastrar Produtos', icon: 'pi pi-fw pi-id-card', routerLink: ['/documentation'] },
+                    {
+                        label: 'Produtos', icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            {
+                                label: 'Cadastro de produtos', icon: 'pi pi-fw pi-bookmark',
+                            },
+                            {
+                                label: 'Emitir relatório de produtos', icon: 'pi pi-fw pi-bookmark',
+                            },
+                        ]
+                    }
                 ]
             },
             {
-                label: 'Serviços',
+                label: 'Vendas',
                 items: [
-                    { label: 'Cadastrar Serviços', icon: 'pi pi-fw pi-eye', routerLink: ['/blocks'], badge: 'NEW' },
+                    {
+                        label: 'Vendas', icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            {
+                                label: 'Cadastro de vendas', icon: 'pi pi-fw pi-bookmark',
+                            },
+                            {
+                                label: 'Emitir relatório de vendas (Diário)', icon: 'pi pi-fw pi-bookmark',
+                            },
+                            {
+                                label: 'Emitir relatório de vendas (Mensal)', icon: 'pi pi-fw pi-bookmark',
+                            },
+                        ]
+                    }
                 ]
             },
             {
                 label: 'Ordem de Serviço',
                 items: [
-                    { label: 'Emitir Ordem de Serviço', icon: 'pi pi-fw pi-prime', routerLink: ['/utilities/icons'] },
+                    {
+                        label: 'Ordem de Serviço', icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            {
+                                label: 'Emitir Ordem de Serviço', icon: 'pi pi-fw pi-bookmark',
+                            },
+                            {
+                                label: 'Emitir relatório OS (Diário)', icon: 'pi pi-fw pi-bookmark',
+                            },
+                            {
+                                label: 'Emitir relatório OS (Mensal)', icon: 'pi pi-fw pi-bookmark',
+                            },
+                        ]
+                    }
                 ]
             },
             {
                 label: 'Financeiro',
-                icon: 'pi pi-fw pi-briefcase',
                 items: [
                     {
-                        label: 'Fechamento de Caixa',
-                        icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/landing']
-                    },
-                    {
-                        label: 'Auth',
-                        icon: 'pi pi-fw pi-user',
+                        label: 'Financeiro', icon: 'pi pi-fw pi-bookmark',
                         items: [
                             {
-                                label: 'Login',
-                                icon: 'pi pi-fw pi-sign-in',
-                                routerLink: ['/auth/login']
+                                label: 'Fechamento de caixa', icon: 'pi pi-fw pi-bookmark',
                             },
                             {
-                                label: 'Error',
-                                icon: 'pi pi-fw pi-times-circle',
-                                routerLink: ['/auth/error']
+                                label: 'Cadastrar Contas/Despesas', icon: 'pi pi-fw pi-bookmark',
                             },
                             {
-                                label: 'Access Denied',
-                                icon: 'pi pi-fw pi-lock',
-                                routerLink: ['/auth/access']
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Crud',
-                        icon: 'pi pi-fw pi-pencil',
-                        routerLink: ['/pages/crud']
-                    },
-                    {
-                        label: 'Timeline',
-                        icon: 'pi pi-fw pi-calendar',
-                        routerLink: ['/pages/timeline']
-                    },
-                    {
-                        label: 'Not Found',
-                        icon: 'pi pi-fw pi-exclamation-circle',
-                        routerLink: ['/notfound']
-                    },
-                    {
-                        label: 'Empty',
-                        icon: 'pi pi-fw pi-circle-off',
-                        routerLink: ['/pages/empty']
-                    },
-                ]
-            },
-            {
-                label: 'Hierarchy',
-                items: [
-                    {
-                        label: 'Submenu 1', icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
-                                ]
-                            },
-                            {
-                                label: 'Submenu 1.2', icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                        ]
-                    },
-                    {
-                        label: 'Submenu 2', icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 2.1', icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                ]
-                            },
-                            {
-                                label: 'Submenu 2.2', icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' },
-                                ]
+                                label: 'Emitir relatório mensal', icon: 'pi pi-fw pi-bookmark',
                             },
                         ]
                     }
                 ]
             },
-            {
-                label: 'Get Started',
-                items: [
-                    {
-                        label: 'Documentation', icon: 'pi pi-fw pi-question', routerLink: ['/documentation']
-                    },
-                    {
-                        label: 'View Source', icon: 'pi pi-fw pi-search', url: ['https://github.com/primefaces/sakai-ng'], target: '_blank'
-                    }
-                ]
-            }
         ];
     }
 }
