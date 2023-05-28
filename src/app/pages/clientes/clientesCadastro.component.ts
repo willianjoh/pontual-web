@@ -32,6 +32,10 @@ export class CadastroClientesComponent implements OnInit {
     items: MenuItem[] = [];
 
     home!: MenuItem;
+    
+    isNew: boolean = false;
+
+    titulo: any = 'Novo Cliente';
 
     constructor(private productService: ProductService, private messageService: MessageService) { }
 
@@ -60,6 +64,7 @@ export class CadastroClientesComponent implements OnInit {
         this.product = {};
         this.submitted = false;
         this.productDialog = true;
+        this.isNew = true;
     }
 
     deleteSelectedProducts() {

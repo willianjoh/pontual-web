@@ -15,7 +15,6 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { CadastroClientesRoutingModule } from './clientesCadastro-routing.module';
-import { CadastroClientesComponent } from './clientesCadastro.component';
 
 @NgModule({
     imports: [

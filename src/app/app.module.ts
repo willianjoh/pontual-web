@@ -27,6 +27,7 @@ import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
+import { InputMaskModule } from 'primeng/inputmask';
 
 @NgModule({
     declarations: [
@@ -50,7 +51,8 @@ import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.com
         RadioButtonModule,
         InputNumberModule,
         BreadcrumbModule,
-        DialogModule
+        DialogModule,
+        InputMaskModule
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
