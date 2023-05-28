@@ -9,7 +9,7 @@
 			"price": 65,
 			"category": "Accessories",
 			"quantity": 24,
-			"inventoryStatus": "INSTOCK",
+			"inventoryStatus": "EM DIA",
 			"rating": 5
 		},
 		{
@@ -21,7 +21,7 @@
 			"price": 72,
 			"category": "Accessories",
 			"quantity": 61,
-			"inventoryStatus": "INSTOCK",
+			"inventoryStatus": "EM DIA",
 			"rating": 4
 		},
 		{
@@ -45,7 +45,7 @@
 			"price": 29,
 			"category": "Clothing",
 			"quantity": 25,
-			"inventoryStatus": "INSTOCK",
+			"inventoryStatus": "EM DIA",
 			"rating": 5
 		},
 		{
@@ -57,7 +57,7 @@
 			"price": 15,
 			"category": "Accessories",
 			"quantity": 73,
-			"inventoryStatus": "INSTOCK",
+			"inventoryStatus": "EM DIA",
 			"rating": 4
 		},
 		{
@@ -69,7 +69,7 @@
 			"price": 120,
 			"category": "Accessories",
 			"quantity": 0,
-			"inventoryStatus": "OUTOFSTOCK",
+			"inventoryStatus": "PAGAMENTO PENDENTE",
 			"rating": 4
 		},
 		{
@@ -93,7 +93,7 @@
 			"price": 34,
 			"category": "Accessories",
 			"quantity": 23,
-			"inventoryStatus": "INSTOCK",
+			"inventoryStatus": "EM DIA",
 			"rating": 5
 		},
 		{
@@ -117,7 +117,7 @@
 			"price": 299,
 			"category": "Electronics",
 			"quantity": 63,
-			"inventoryStatus": "INSTOCK",
+			"inventoryStatus": "EM DIA",
 			"rating": 3
 		}
 	]

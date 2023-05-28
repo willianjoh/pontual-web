@@ -25,6 +25,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
 
 @NgModule({
@@ -48,6 +49,7 @@ import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.com
         DropdownModule,
         RadioButtonModule,
         InputNumberModule,
+        BreadcrumbModule,
         DialogModule
     ],
     providers: [

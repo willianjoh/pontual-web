@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
@@ -29,9 +29,16 @@ export class CadastroClientesComponent implements OnInit {
 
     rowsPerPageOptions = [5, 10, 20];
 
+    items: MenuItem[] = [];
+
+    home!: MenuItem;
+
     constructor(private productService: ProductService, private messageService: MessageService) { }
 
     ngOnInit() {
+        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Cadastro de Clientes' }];
+        this.home = { icon: 'pi pi-home', routerLink: '/' };
+
         this.productService.getProducts().then(data => this.products = data);
 
         this.cols = [
@@ -43,8 +50,8 @@ export class CadastroClientesComponent implements OnInit {
         ];
 
         this.statuses = [
-            { label: 'INSTOCK', value: 'instock' },
-            { label: 'LOWSTOCK', value: 'lowstock' },
+            { label: 'EM DIA', value: 'instock' },
+            { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
             { label: 'OUTOFSTOCK', value: 'outofstock' }
         ];
     }
@@ -72,14 +79,14 @@ export class CadastroClientesComponent implements OnInit {
     confirmDeleteSelected() {
         this.deleteProductsDialog = false;
         this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
         this.selectedProducts = [];
     }
 
     confirmDelete() {
         this.deleteProductDialog = false;
         this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
         this.product = {};
     }
 
