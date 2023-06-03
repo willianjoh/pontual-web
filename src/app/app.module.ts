@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { CommonModule, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,10 +28,14 @@ import { ButtonModule } from 'primeng/button';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
 import { InputMaskModule } from 'primeng/inputmask';
+import { ProdutosCadastroComponent } from './pages/produtos/produtosCadastro.component';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SpinnerComponent } from './demo/components/spinner/spinner.component';
+import { BlockUIModule } from 'ng-block-ui';
 
 @NgModule({
     declarations: [
-        AppComponent, NotfoundComponent, CadastroClientesComponent
+        AppComponent, NotfoundComponent, CadastroClientesComponent, ProdutosCadastroComponent, SpinnerComponent, SpinnerComponent
     ],
     imports: [
         AppRoutingModule,
@@ -52,12 +56,14 @@ import { InputMaskModule } from 'primeng/inputmask';
         InputNumberModule,
         BreadcrumbModule,
         DialogModule,
-        InputMaskModule
+        InputMaskModule,
+        ProgressSpinnerModule,
+        BlockUIModule
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CountryService, CustomerService, EventService, IconService, NodeService,
-        PhotoService, ProductService
+        PhotoService, ProductService,
     ],
     bootstrap: [AppComponent]
 })

@@ -1,0 +1,24 @@
+.progress-spinner {
+    position: fixed;
+    z-index: 999;
+    height: 2em;
+    width: 2em;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.progress-spinner:before {
+    background: #1f1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 10%;
+  }

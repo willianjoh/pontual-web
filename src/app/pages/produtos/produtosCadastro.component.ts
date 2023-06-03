@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 
 @Component({
-    templateUrl: './clientesCadastro.component.html',
+    templateUrl: './produtosCadastro.component.html',
     providers: [MessageService]
 })
-export class CadastroClientesComponent implements OnInit {
+export class ProdutosCadastroComponent implements OnInit {
     productDialog: boolean = false;
 
     deleteProductDialog: boolean = false;
@@ -35,14 +36,22 @@ export class CadastroClientesComponent implements OnInit {
     
     isNew: boolean = false;
 
-    titulo: any = 'Novo Cliente';
+    titulo: string = 'Novo Cliente';
+    showSpinner = false
 
-    constructor(private productService: ProductService, private messageService: MessageService) { }
+    @BlockUI() blockUI!: NgBlockUI;
+
+    constructor(private productService: ProductService, private messageService: MessageService) {
+        this.blockUI.start('Carregando...')
+        setTimeout(() => {
+            this.blockUI.stop();
+        }, 60000)
+     }
 
     ngOnInit() {
-        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Cadastro de Clientes' }];
+        this.items = [{ label: 'Produtos' }, { label: 'Produtos' }, { label: 'Cadastro de Produtos' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
-
+        this.showSpinner= true
         this.productService.getProducts().then(data => this.products = data);
 
         this.cols = [
@@ -58,6 +67,7 @@ export class CadastroClientesComponent implements OnInit {
             { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
             { label: 'OUTOFSTOCK', value: 'outofstock' }
         ];
+        this.showSpinner= false
     }
 
     openNew() {
@@ -65,7 +75,7 @@ export class CadastroClientesComponent implements OnInit {
         this.submitted = false;
         this.productDialog = true;
         this.isNew = true;
-        this.titulo = "Novo Cliente"
+        this.titulo = "Novo Produto"
     }
 
     deleteSelectedProducts() {
@@ -75,7 +85,7 @@ export class CadastroClientesComponent implements OnInit {
     editProduct(product: Product) {
         this.product = { ...product };
         this.productDialog = true;
-        this.titulo = "Editar Cliente"
+        this.titulo = "Editar Produto"
     }
 
     deleteProduct(product: Product) {
