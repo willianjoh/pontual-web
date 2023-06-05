@@ -45,7 +45,7 @@ export class ProdutosCadastroComponent implements OnInit {
         this.blockUI.start('Carregando...')
         setTimeout(() => {
             this.blockUI.stop();
-        }, 60000)
+        }, 1000)
      }
 
     ngOnInit() {
@@ -119,8 +119,10 @@ export class ProdutosCadastroComponent implements OnInit {
             if (this.product.id) {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
+                this.blockUI.start('Carregando...')
                 this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
+                this.blockUI.stop();
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
             } else {
                 this.product.id = this.createId();
                 this.product.code = this.createId();
@@ -128,7 +130,7 @@ export class ProdutosCadastroComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
                 this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
             }
 
             this.products = [...this.products];

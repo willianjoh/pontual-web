@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
@@ -37,7 +38,14 @@ export class CadastroClientesComponent implements OnInit {
 
     titulo: any = 'Novo Cliente';
 
-    constructor(private productService: ProductService, private messageService: MessageService) { }
+    @BlockUI() blockUI!: NgBlockUI;
+    
+    constructor(private productService: ProductService, private messageService: MessageService) {
+        this.blockUI.start('Carregando...')
+        setTimeout(() => {
+            this.blockUI.stop();
+        }, 1000)
+     }
 
     ngOnInit() {
         this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Cadastro de Clientes' }];

@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
             menuMode: 'static',                 //layout mode of the menu, valid values are "static" and "overlay"
             colorScheme: 'dark',               //color scheme of the template, valid values are "light" and "dark"
             theme: 'bootstrap4-dark-blue',         //default component theme for PrimeNG
-            scale: 13                          //size of the body font size to scale the whole application
+            scale: 12                          //size of the body font size to scale the whole application
         };
     }
 }

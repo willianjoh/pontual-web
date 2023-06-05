@@ -58,7 +58,7 @@ import { BlockUIModule } from 'ng-block-ui';
         DialogModule,
         InputMaskModule,
         ProgressSpinnerModule,
-        BlockUIModule
+        BlockUIModule.forRoot()
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },

@@ -15,6 +15,7 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ProdutosCadastroRoutingModule } from './produtosCadastro-routing.module';
+import { BlockUI, BlockUIModule, BlockUIService } from 'ng-block-ui';
 
 @NgModule({
     imports: [
@@ -33,7 +34,8 @@ import { ProdutosCadastroRoutingModule } from './produtosCadastro-routing.module
         DropdownModule,
         RadioButtonModule,
         InputNumberModule,
-        DialogModule
+        DialogModule,
+        BlockUIModule.forRoot(),
     ],
     declarations: []
 })
