@@ -30,12 +30,11 @@ import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.com
 import { InputMaskModule } from 'primeng/inputmask';
 import { ProdutosCadastroComponent } from './pages/produtos/produtosCadastro.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { SpinnerComponent } from './demo/components/spinner/spinner.component';
 import { BlockUIModule } from 'ng-block-ui';
 
 @NgModule({
     declarations: [
-        AppComponent, NotfoundComponent, CadastroClientesComponent, ProdutosCadastroComponent, SpinnerComponent, SpinnerComponent
+        AppComponent, NotfoundComponent, CadastroClientesComponent, ProdutosCadastroComponent
     ],
     imports: [
         AppRoutingModule,

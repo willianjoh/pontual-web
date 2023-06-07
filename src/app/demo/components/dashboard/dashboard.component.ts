@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Product } from '../../api/product';
 import { ProductService } from '../../service/product.service';
 import { Subscription } from 'rxjs';
@@ -7,6 +7,7 @@ import { LayoutService } from 'src/app/layout/service/app.layout.service';
 
 @Component({
     templateUrl: './dashboard.component.html',
+    providers: [MessageService]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
@@ -20,14 +21,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     subscription!: Subscription;
 
-    constructor(private productService: ProductService, public layoutService: LayoutService) {
+    constructor(private productService: ProductService, public layoutService: LayoutService, private messageService: MessageService) {
         this.subscription = this.layoutService.configUpdate$.subscribe(() => {
             this.initChart();
         });
     }
 
     ngOnInit() {
-     this.initChart();
+        this.initChart();
         this.productService.getProductsSmall().then(data => this.products = data);
 
         this.items = [
