@@ -9,7 +9,7 @@ import { ProductService } from 'src/app/demo/service/product.service';
     templateUrl: './produtosCadastro.component.html',
     providers: [MessageService]
 })
-export class ProdutosCadastroComponent implements OnInit {
+export class CadastroProdutosComponent implements OnInit {
     productDialog: boolean = false;
 
     deleteProductDialog: boolean = false;

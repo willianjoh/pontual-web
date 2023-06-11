@@ -6,10 +6,10 @@ import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 
 @Component({
-    templateUrl: './clientesCadastro.component.html',
+    templateUrl: './vendasCadastro.component.html',
     providers: [MessageService]
 })
-export class CadastroClientesComponent implements OnInit {
+export class CadastroVendasComponent implements OnInit {
     productDialog: boolean = false;
 
     deleteProductDialog: boolean = false;
@@ -36,7 +36,7 @@ export class CadastroClientesComponent implements OnInit {
     
     isNew: boolean = false;
 
-    titulo: any = 'Novo Cliente';
+    titulo: any = 'Venda/Serviço';
 
     @BlockUI() blockUI!: NgBlockUI;
     
@@ -48,7 +48,7 @@ export class CadastroClientesComponent implements OnInit {
      }
 
     ngOnInit() {
-        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Cadastro de Clientes' }];
+        this.items = [{ label: 'Vendas' }, { label: 'Vendas' }, { label: 'Cadastro de Vendas' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
 
         this.productService.getProducts().then(data => this.products = data);
@@ -73,7 +73,7 @@ export class CadastroClientesComponent implements OnInit {
         this.submitted = false;
         this.productDialog = true;
         this.isNew = true;
-        this.titulo = "Novo Cliente"
+        this.titulo = "Venda/Serviço"
     }
 
     deleteSelectedProducts() {
@@ -83,7 +83,7 @@ export class CadastroClientesComponent implements OnInit {
     editProduct(product: Product) {
         this.product = { ...product };
         this.productDialog = true;
-        this.titulo = "Editar Cliente"
+        this.titulo = "Editar Venda/Serviço"
     }
 
     deleteProduct(product: Product) {
@@ -118,7 +118,7 @@ export class CadastroClientesComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
                 this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente atualizado', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Venda/Serviço atualizada.', life: 3000 });
             } else {
                 this.product.id = this.createId();
                 this.product.code = this.createId();
@@ -126,7 +126,7 @@ export class CadastroClientesComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
                 this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente cadastrado', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Venda/Serviço cadastrada.', life: 3000 });
             }
 
             this.products = [...this.products];

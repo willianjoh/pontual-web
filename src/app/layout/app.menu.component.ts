@@ -27,7 +27,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Clientes', icon: 'pi pi-fw pi-users',
                         items: [
                             {
-                                label: 'Cadastro de Clientes', icon: 'pi pi-fw pi-users', routerLink: ['clientes/cadastro'],
+                                label: 'Cadastro de clientes', icon: 'pi pi-fw pi-users', routerLink: ['clientes/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório de clientes', icon: 'pi pi-fw pi-file-pdf',
@@ -53,19 +53,32 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
+                label: 'Serviços',
+                items: [
+                    {
+                        label: 'Tipos de serviços', icon: 'pi pi-fw pi-wrench',
+                        items: [
+                            {
+                                label: 'Cadastro de serviços simples', icon: 'pi pi-fw pi-wrench', routerLink: ['servico/cadastro'],
+                            },
+                            {
+                                label: 'Emitir relatório de serviços', icon: 'pi pi-fw pi-file-pdf',
+                            },
+                        ]
+                    }
+                ]
+            },
+            {
                 label: 'Vendas',
                 items: [
                     {
                         label: 'Vendas', icon: 'pi pi-fw pi-shopping-cart',
                         items: [
                             {
-                                label: 'Cadastro de vendas', icon: 'pi pi-fw pi-shopping-cart',
+                                label: 'Cadastro de vendas', icon: 'pi pi-fw pi-shopping-cart', routerLink: ['vendas/cadastro'],
                             },
                             {
-                                label: 'Emitir relatório de vendas (Diário)', icon: 'pi pi-fw pi-file-pdf',
-                            },
-                            {
-                                label: 'Emitir relatório de vendas (Mensal)', icon: 'pi pi-fw pi-file-pdf',
+                                label: 'Emitir relatório de vendas', icon: 'pi pi-fw pi-file-pdf',
                             },
                         ]
                     }
@@ -78,13 +91,10 @@ export class AppMenuComponent implements OnInit {
                         label: 'Ordem de Serviço', icon: 'pi pi-fw pi-wrench',
                         items: [
                             {
-                                label: 'Emitir Ordem de Serviço', icon: 'pi pi-fw pi-wrench',
+                                label: 'Emitir ordem de serviço especializado', icon: 'pi pi-fw pi-wrench',
                             },
                             {
-                                label: 'Emitir relatório OS (Diário)', icon: 'pi pi-fw pi-file-pdf',
-                            },
-                            {
-                                label: 'Emitir relatório OS (Mensal)', icon: 'pi pi-fw pi-file-pdf',
+                                label: 'Emitir relatório OS', icon: 'pi pi-fw pi-file-pdf',
                             },
                         ]
                     }
@@ -100,7 +110,7 @@ export class AppMenuComponent implements OnInit {
                                 label: 'Fechamento de caixa', icon: 'pi pi-fw pi-dollar',
                             },
                             {
-                                label: 'Cadastrar Contas/Despesas', icon: 'pi pi-fw pi-dollar',
+                                label: 'Cadastrar contas/despesas', icon: 'pi pi-fw pi-dollar',
                             },
                             {
                                 label: 'Emitir relatório mensal', icon: 'pi pi-fw pi-file-pdf',

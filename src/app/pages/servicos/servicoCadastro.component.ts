@@ -6,10 +6,10 @@ import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 
 @Component({
-    templateUrl: './clientesCadastro.component.html',
+    templateUrl: './servicoCadastro.component.html',
     providers: [MessageService]
 })
-export class CadastroClientesComponent implements OnInit {
+export class CadastroServicoComponent implements OnInit {
     productDialog: boolean = false;
 
     deleteProductDialog: boolean = false;
@@ -48,7 +48,7 @@ export class CadastroClientesComponent implements OnInit {
      }
 
     ngOnInit() {
-        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Cadastro de Clientes' }];
+        this.items = [{ label: 'Serviços' }, { label: 'Tipos de Serviços' }, { label: 'Cadastro de Serviços simples' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
 
         this.productService.getProducts().then(data => this.products = data);

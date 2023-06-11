@@ -28,13 +28,20 @@ import { ButtonModule } from 'primeng/button';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
 import { InputMaskModule } from 'primeng/inputmask';
-import { ProdutosCadastroComponent } from './pages/produtos/produtosCadastro.component';
+import { CadastroProdutosComponent } from './pages/produtos/produtosCadastro.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BlockUIModule } from 'ng-block-ui';
+import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
+import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
 
 @NgModule({
     declarations: [
-        AppComponent, NotfoundComponent, CadastroClientesComponent, ProdutosCadastroComponent
+        AppComponent, 
+        NotfoundComponent, 
+        CadastroClientesComponent, 
+        CadastroProdutosComponent,
+        CadastroVendasComponent,
+        CadastroServicoComponent
     ],
     imports: [
         AppRoutingModule,

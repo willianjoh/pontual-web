@@ -1,0 +1,162 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card flex justify-content-lefth">
+            <p-breadcrumb class="max-w-full" [model]="items" [home]="home"></p-breadcrumb>
+        </div>
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
+                            class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
+                            class="p-button-danger" (click)="deleteSelectedProducts()"
+                            [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+            <p-table #dt [value]="products" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
+                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
+                [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Gerenciamento de Serviços</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Pesquisar..."
+                                class="w-full sm:w-auto" />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="code">Código<p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="name">Tipo<p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="price">Descrição<p-sortIcon field="price"></p-sortIcon></th>
+                        <th pSortableColumn="category">Valor<p-sortIcon field="category"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                        </td>
+                        <td style="width:20%; min-width:10rem;"><span class="p-column-title">Code</span>
+                            {{product.code || product.id}}
+                        </td>
+                        <td style="width:22%; min-width:10rem;">
+                            <span class="p-column-title">Tipo</span>
+                            {{product.name}}
+                        </td>
+                        <td style="width:23%; min-width:10rem;">
+                            <span class="p-column-title">Descrição</span>
+                            {{product.name}}
+                        </td>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Valor</span>
+                            {{product.category}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="editProduct(product)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                                    (click)="deleteProduct(product)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p-dialog [(visible)]="productDialog" [style]="{width: '800px'}" header="{{titulo}}" [modal]="true"
+                class="p-fluid">
+                <ng-template pTemplate="content">
+                    <div class="formgrid grid">
+                        <div class="field col">
+                            <span class="p-float-label">
+                                <input pInputText id="name" [(ngModel)]="product.name"
+                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
+                                <label htmlFor="username">Nome</label>
+                            </span>
+                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo Obrigatório.</small>
+                        </div>
+                        <div class="field col">
+                            <span class="p-float-label">
+                                <input pInputText id="name" [(ngModel)]="product.name"
+                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
+                                <label htmlFor="username">Sobrenome</label>
+                            </span>
+                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo
+                                Obrigatório.</small>
+                        </div>
+                    </div>
+                    <div class="field" style="padding-top: 15px;">
+                        <span class="p-float-label">
+                            <p-inputMask mask="999.999.999-99" [(ngModel)]="product.code" placeholder="(99) 99999-9999"></p-inputMask>
+                            <label htmlFor="username">CPF</label>
+                        </span>
+                    </div>
+                    <div class="formgrid grid">
+                        <div class="field col" style="padding-top: 15px;">
+                            <span class="p-float-label">
+                                <p-inputMask mask="(99) 99999-9999" [(ngModel)]="product.description"
+                                    placeholder="(99) 99999-9999"
+                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.description}"></p-inputMask>
+                                <label htmlFor="username">Celular</label>
+                            </span>
+                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
+                                Obrigatório.</small>
+                        </div>
+                        <div class="field col" style="padding-top: 15px;">
+                            <span class="p-float-label">
+                                <p-inputMask mask="(99) 99999-9999" [(ngModel)]="product.description"
+                                    placeholder="(99) 99999-9999"></p-inputMask>
+                                <label htmlFor="username">Fixo</label>
+                            </span>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
+                        (click)="hideDialog()"></button>
+                    <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
+                        (click)="saveProduct()"></button>
+                </ng-template>
+            </p-dialog>
+
+            <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+                <div class="flex align-items-center justify-content-center">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                    <span *ngIf="product">Deseja deletar o cliente: <b>{{product.name}}</b>?</span>
+                </div>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"
+                        (click)="deleteProductDialog = false"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Sim"
+                        (click)="confirmDelete()"></button>
+                </ng-template>
+            </p-dialog>
+
+            <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+                <div class="flex align-items-center justify-content-center">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                    <span>Deseja deletar todos os clientes selecionados?</span>
+                </div>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"
+                        (click)="deleteProductsDialog = false"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Sim"
+                        (click)="confirmDeleteSelected()"></button>
+                </ng-template>
+            </p-dialog>
+        </div>
+    </div>
+</div>
