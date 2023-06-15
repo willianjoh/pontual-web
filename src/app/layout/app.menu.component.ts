@@ -59,7 +59,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Tipos de serviços', icon: 'pi pi-fw pi-wrench',
                         items: [
                             {
-                                label: 'Cadastro de serviços simples', icon: 'pi pi-fw pi-wrench', routerLink: ['servico/cadastro'],
+                                label: 'Cadastro de serviços', icon: 'pi pi-fw pi-wrench', routerLink: ['servico/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório de serviços', icon: 'pi pi-fw pi-file-pdf',
@@ -91,7 +91,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Ordem de Serviço', icon: 'pi pi-fw pi-wrench',
                         items: [
                             {
-                                label: 'Emitir ordem de serviço especializado', icon: 'pi pi-fw pi-wrench',
+                                label: 'Emitir ordem de serviço', icon: 'pi pi-fw pi-wrench',
                             },
                             {
                                 label: 'Emitir relatório OS', icon: 'pi pi-fw pi-file-pdf',

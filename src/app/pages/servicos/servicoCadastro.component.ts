@@ -48,7 +48,7 @@ export class CadastroServicoComponent implements OnInit {
      }
 
     ngOnInit() {
-        this.items = [{ label: 'Serviços' }, { label: 'Tipos de Serviços' }, { label: 'Cadastro de Serviços simples' }];
+        this.items = [{ label: 'Serviços' }, { label: 'Tipos de Serviços' }, { label: 'Cadastro de serviços' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
 
         this.productService.getProducts().then(data => this.products = data);
@@ -73,7 +73,7 @@ export class CadastroServicoComponent implements OnInit {
         this.submitted = false;
         this.productDialog = true;
         this.isNew = true;
-        this.titulo = "Novo Cliente"
+        this.titulo = "Novo Serviço"
     }
 
     deleteSelectedProducts() {
@@ -83,7 +83,7 @@ export class CadastroServicoComponent implements OnInit {
     editProduct(product: Product) {
         this.product = { ...product };
         this.productDialog = true;
-        this.titulo = "Editar Cliente"
+        this.titulo = "Editar Serviço"
     }
 
     deleteProduct(product: Product) {
@@ -118,7 +118,7 @@ export class CadastroServicoComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
                 this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente atualizado', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
             } else {
                 this.product.id = this.createId();
                 this.product.code = this.createId();
@@ -126,7 +126,7 @@ export class CadastroServicoComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
                 this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente cadastrado', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
             }
 
             this.products = [...this.products];

@@ -26,8 +26,8 @@
                         <h5 class="m-0">Gerenciamento de Vendas</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Pesquisar..."
-                                class="w-full sm:w-auto" />
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Pesquisar..." class="w-full sm:w-auto" />
                         </span>
                     </div>
                 </ng-template>
@@ -38,7 +38,8 @@
                         </th>
                         <th pSortableColumn="code">Código<p-sortIcon field="code"></p-sortIcon></th>
                         <th pSortableColumn="name">Produto/Serviço <p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="inventoryStatus">Descrição<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus">Descrição<p-sortIcon field="inventoryStatus"></p-sortIcon>
+                        </th>
                         <th pSortableColumn="price">Forma de pagamento<p-sortIcon field="price"></p-sortIcon></th>
                         <th pSortableColumn="price">Valor de custo<p-sortIcon field="price"></p-sortIcon></th>
                         <th pSortableColumn="category">Valor de venda<p-sortIcon field="category"></p-sortIcon></th>
@@ -85,54 +86,71 @@
                     </tr>
                 </ng-template>
             </p-table>
-            <p-dialog [(visible)]="productDialog" [style]="{width: '800px'}" header="{{titulo}}" [modal]="true"
-                class="p-fluid">
-                <ng-template pTemplate="content">
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <span class="p-float-label">
-                                <input pInputText id="name" [(ngModel)]="product.name"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                                <label htmlFor="username">Nome</label>
-                            </span>
-                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo Obrigatório.</small>
+            <p-dialog [(visible)]="productDialog" [style]="{width: '800px'}" header="{{titulo}}" [modal]="true" class="p-fluid">
+                <div class="content tamanho">
+                    <div class="field">
+                        <label class="mb-3">Categoria</label>
+                        <div class="formgrid grid">
+                            <div class="field-radiobutton col-2">
+                                <p-radioButton id="category1" name="category" value="0"
+                                    [(ngModel)]="product.category"></p-radioButton>
+                                <label for="category1">Produto</label>
+                            </div>
+                            <div class="field-radiobutton col-2">
+                                <p-radioButton id="category2" name="category" value="1"
+                                    [(ngModel)]="product.category"></p-radioButton>
+                                <label for="category2">Serviço</label>
+                            </div>
                         </div>
-                        <div class="field col">
-                            <span class="p-float-label">
-                                <input pInputText id="name" [(ngModel)]="product.name"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                                <label htmlFor="username">Sobrenome</label>
-                            </span>
-                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo
-                                Obrigatório.</small>
-                        </div>
-                    </div>
-                    <div class="field" style="padding-top: 15px;">
-                        <span class="p-float-label">
-                            <p-inputMask mask="999.999.999-99" [(ngModel)]="product.code" placeholder="(99) 99999-9999"></p-inputMask>
-                            <label htmlFor="username">CPF</label>
-                        </span>
                     </div>
                     <div class="formgrid grid">
                         <div class="field col" style="padding-top: 15px;">
                             <span class="p-float-label">
-                                <p-inputMask mask="(99) 99999-9999" [(ngModel)]="product.description"
-                                    placeholder="(99) 99999-9999"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.description}"></p-inputMask>
-                                <label htmlFor="username">Celular</label>
+                                <p-dropdown [(ngModel)]="product.inventoryStatus" inputId="inventoryStatus" optionValue="label" [options]="statuses" placeholder="Select">
+                                    <ng-template pTemplate="selectedItem">
+                                        <span *ngIf="product && product.inventoryStatus" [class]="'product-badge status-' + product.inventoryStatus.toString().toLowerCase()">{{product.inventoryStatus}}</span>
+                                    </ng-template>
+                                    <ng-template let-option pTemplate="item">
+                                        <span [class]="'product-badge status-' + option.value">{{option.label}}</span>
+                                    </ng-template>
+                                </p-dropdown>
+                                <label for="status">Forma de pagamento</label>
+                            </span>
+                        </div>
+                        <div class="field col" style="padding-top: 15px;">
+                            <span class="p-float-label">
+                                <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="BRL"
+                                    locale="pt-BR"
+                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"></p-inputNumber>
+                                <label for="float-input">Valor de custo</label>
+                            </span>
+                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
+                                Obrigatório.</small>
+                        </div>
+                    </div>
+                    <div class="formgrid grid">
+                        <div class="field col" style="padding-top: 15px;">
+                            <span class="p-float-label">
+                                <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="BRL"
+                                    locale="pt-BR"
+                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"></p-inputNumber>
+                                <label for="float-input">Valor de venda</label>
                             </span>
                             <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
                                 Obrigatório.</small>
                         </div>
                         <div class="field col" style="padding-top: 15px;">
                             <span class="p-float-label">
-                                <p-inputMask mask="(99) 99999-9999" [(ngModel)]="product.description"
-                                    placeholder="(99) 99999-9999"></p-inputMask>
-                                <label htmlFor="username">Fixo</label>
+                                <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="BRL"
+                                    locale="pt-BR"
+                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"></p-inputNumber>
+                                <label for="float-input">Valor de custo</label>
                             </span>
+                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
+                                Obrigatório.</small>
                         </div>
                     </div>
-                </ng-template>
+                </div>
 
                 <ng-template pTemplate="footer">
                     <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"

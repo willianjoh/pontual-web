@@ -6,6 +6,7 @@ import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 
 @Component({
+    styleUrls: ['./vendasCadastro.component.scss'],
     templateUrl: './vendasCadastro.component.html',
     providers: [MessageService]
 })
