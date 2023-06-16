@@ -1,5 +1,5 @@
-import { NgModule, LOCALE_ID } from '@angular/core';
-import { CommonModule, HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { CommonModule, HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppLayoutModule } from './layout/app.layout.module';
@@ -33,6 +33,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BlockUIModule } from 'ng-block-ui';
 import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
 import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
     declarations: [
@@ -62,6 +63,7 @@ import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.compo
         InputNumberModule,
         BreadcrumbModule,
         DialogModule,
+        CalendarModule,
         InputMaskModule,
         ProgressSpinnerModule,
         BlockUIModule.forRoot()

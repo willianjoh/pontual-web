@@ -7,10 +7,22 @@ import { LayoutService } from './layout/service/app.layout.service';
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-
-    constructor(private primengConfig: PrimeNGConfig,private layoutService: LayoutService) { }
+    pt = {
+        firstDayOfWeek: 0,
+        dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+        dayNamesShort: ['Do', 'Se', 'Te', 'Qu', 'Qu', 'Se', 'Sa'],
+        dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+        monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
+          'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        today: 'Hoje',
+        clear: 'Limpar',
+        dateFormat: 'dd/mm/yy',
+    }
+    constructor(private primengConfig: PrimeNGConfig, private layoutService: LayoutService) { }
 
     ngOnInit() {
+        this.primengConfig.setTranslation(this.pt)
         this.primengConfig.ripple = false;
         this.layoutService.config = {
             ripple: false,                      //toggles ripple on and off

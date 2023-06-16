@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -35,6 +35,6 @@ import { CadastroVendasRoutingModule } from './vendasCadastro-routing.module';
         InputNumberModule,
         DialogModule
     ],
-    declarations: []
+    declarations: [],
 })
 export class VendasCadastroModule { }

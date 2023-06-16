@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
+import { LocaleSettings } from 'primeng/calendar';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
@@ -12,13 +13,13 @@ import { ProductService } from 'src/app/demo/service/product.service';
 })
 export class CadastroVendasComponent implements OnInit {
     productDialog: boolean = false;
-
+    
     deleteProductDialog: boolean = false;
-
+    
     deleteProductsDialog: boolean = false;
-
+    
     products: Product[] = [];
-
+    
     product: Product = {};
 
     selectedProducts: Product[] = [];
@@ -29,25 +30,27 @@ export class CadastroVendasComponent implements OnInit {
 
     statuses: any[] = [];
 
+    parcelas: any [] = [];
+
     rowsPerPageOptions = [5, 10, 20];
-
+    
     items: MenuItem[] = [];
-
+    
     home!: MenuItem;
     
     isNew: boolean = false;
-
+    
     titulo: any = 'Venda/Serviço';
 
     @BlockUI() blockUI!: NgBlockUI;
-    
+
     constructor(private productService: ProductService, private messageService: MessageService) {
         this.blockUI.start('Carregando...')
         setTimeout(() => {
             this.blockUI.stop();
         }, 1000)
-     }
-
+    }
+    
     ngOnInit() {
         this.items = [{ label: 'Vendas' }, { label: 'Vendas' }, { label: 'Cadastro de Vendas' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
@@ -63,9 +66,24 @@ export class CadastroVendasComponent implements OnInit {
         ];
 
         this.statuses = [
-            { label: 'EM DIA', value: 'instock' },
-            { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
+            { label: 'Dinheiro', value: '1' },
+            { label: 'Débito', value: '2' },
+            { label: 'Crédito', value: '3' }
+        ];
+
+        this.parcelas = [
+            { label: '1x', value: '1' },
+            { label: '2x', value: '2' },
+            { label: '3x', value: '3' },
+            { label: '4x', value: '4' },
+            { label: '5x', value: '5' },
+            { label: '6x', value: '6' },
+            { label: '7x', value: '7' },
+            { label: '8x', value: '8' },
+            { label: '9x', value: '9' },
+            { label: '10x', value: '10' },
+            { label: '11x', value: '11' },
+            { label: '12x', value: '12' },
         ];
     }
 

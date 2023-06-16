@@ -6,5 +6,9 @@ import { LayoutService } from "./service/app.layout.service";
     templateUrl: './app.footer.component.html'
 })
 export class AppFooterComponent {
-    constructor(public layoutService: LayoutService) { }
+    ano!: Number;
+    constructor(public layoutService: LayoutService) {
+        let data = new Date;
+        this.ano = data.getFullYear()
+    }
 }
