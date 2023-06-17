@@ -17,6 +17,7 @@ import { LoginComponent } from './demo/components/auth/login/login.component';
                     { path: 'produtos/cadastro', loadChildren: () => import('./pages/produtos/produtosCadastro.module').then(m => m.ProdutosCadastroModule) },
                     { path: 'vendas/cadastro', loadChildren: () => import('./pages/vendas/vendasCadastro.module').then(m => m.VendasCadastroModule) },
                     { path: 'servico/cadastro', loadChildren: () => import('./pages/servicos/servicoCadastro.module').then(m => m.ServicoCadastroModule) },
+                    { path: 'ordem-servico/cadastro', loadChildren: () => import('./pages/ordem-servico/ordemServicoCadastro.module').then(m => m.OrdemServicoCadastroModule) },
                     { path: 'utilities', loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
                     { path: 'documentation', loadChildren: () => import('./demo/components/documentation/documentation.module').then(m => m.DocumentationModule) },
                     { path: 'blocks', loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule) },

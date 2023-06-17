@@ -34,6 +34,7 @@ import { BlockUIModule } from 'ng-block-ui';
 import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
 import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
 import { CalendarModule } from 'primeng/calendar';
+import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServicoCadastro.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +43,8 @@ import { CalendarModule } from 'primeng/calendar';
         CadastroClientesComponent, 
         CadastroProdutosComponent,
         CadastroVendasComponent,
-        CadastroServicoComponent
+        CadastroServicoComponent,
+        OrdemServicoProdutosComponent
     ],
     imports: [
         AppRoutingModule,

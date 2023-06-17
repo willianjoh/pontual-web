@@ -91,7 +91,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Ordem de Serviço', icon: 'pi pi-fw pi-wrench',
                         items: [
                             {
-                                label: 'Emitir ordem de serviço', icon: 'pi pi-fw pi-wrench',
+                                label: 'Emitir ordem de serviço', icon: 'pi pi-fw pi-wrench', routerLink: ['ordem-servico/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório OS', icon: 'pi pi-fw pi-file-pdf',
