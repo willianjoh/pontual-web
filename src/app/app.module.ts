@@ -13,7 +13,7 @@ import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
 import { TableModule } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -22,6 +22,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputTextModule } from 'primeng/inputtext';
 import { RatingModule } from 'primeng/rating';
 import { ToolbarModule } from 'primeng/toolbar';
+import { PaginatorModule } from 'primeng/paginator';
 import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
@@ -49,6 +50,8 @@ import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServic
     imports: [
         AppRoutingModule,
         CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
         AppLayoutModule,
         TableModule,
         FileUploadModule,
@@ -68,6 +71,7 @@ import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServic
         CalendarModule,
         InputMaskModule,
         ProgressSpinnerModule,
+        PaginatorModule,
         BlockUIModule.forRoot()
     ],
     providers: [

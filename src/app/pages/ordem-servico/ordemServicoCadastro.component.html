@@ -40,7 +40,7 @@
                         <th pSortableColumn="category">Tipo de servico<p-sortIcon field="category"></p-sortIcon></th>
                         <th pSortableColumn="price">Cliente<p-sortIcon field="price"></p-sortIcon></th>
                         <th pSortableColumn="name">Data orçamento<p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="inventoryStatus">Data retirada<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus">Data entrega<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
                         <th pSortableColumn="price">Status do serviço<p-sortIcon field="price"></p-sortIcon></th>
                         <th></th>
                     </tr>
@@ -66,7 +66,7 @@
                             {{product.category}}
                         </td>
                         <td style="width:15%; min-width:10rem;">
-                            <span class="p-column-title">Data retirada</span>
+                            <span class="p-column-title">Data entrega</span>
                             {{product.category}}
                         </td>
                         <td style="width:17%; min-width: 10rem;"><span class="p-column-title">Status do serviço</span>
@@ -132,7 +132,7 @@
                             <span class="p-float-label">
                                 <p-calendar name="data" [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"
                                     [(ngModel)]="product.price" [showTime]="false" [showIcon]="true"></p-calendar>
-                                <label for="float-input">Data de retirada</label>
+                                <label for="float-input">Data de entrega</label>
                             </span>
                             <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
                                 Obrigatório.</small>

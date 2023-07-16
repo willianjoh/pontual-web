@@ -8,9 +8,9 @@
             <p-toolbar styleClass="mb-4">
                 <ng-template pTemplate="left">
                     <div class="my-2">
-                        <button pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
+                        <button id="openNew" pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
                             class="p-button-success mr-2" (click)="openNew()"></button>
-                        <button pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
+                        <button id="deleteAll" pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
                             class="p-button-danger" (click)="deleteSelectedProducts()"
                             [disabled]="!selectedProducts || !selectedProducts.length"></button>
                     </div>
@@ -18,7 +18,7 @@
             </p-toolbar>
             <p-table #dt [value]="products" [columns]="cols" responsiveLayout="scroll" [rows]="10"
                 [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
-                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true" (onPage)="page($event)"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
                 [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
@@ -26,8 +26,8 @@
                         <h5 class="m-0">Gerenciamento de Clientes</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Pesquisar..."
-                                class="w-full sm:w-auto" />
+                            <input id="pesquisa" pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Pesquisar..." class="w-full sm:w-auto" />
                         </span>
                     </div>
                 </ng-template>
@@ -84,58 +84,83 @@
             <p-dialog [(visible)]="productDialog" [style]="{width: '800px'}" header="{{titulo}}" [modal]="true"
                 class="p-fluid">
                 <ng-template pTemplate="content">
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <span class="p-float-label">
-                                <input pInputText id="name" [(ngModel)]="product.name"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                                <label htmlFor="username">Nome</label>
-                            </span>
-                            <small class="ng-invalid ng-dirty" *ngIf="submitted && !product.name">Campo Obrigatório.</small>
+                    <form [formGroup]="formGroup">
+                        <div class="formgrid grid">
+                            <div class="field col">
+                                <div class="form-group">
+                                    <span class="p-float-label">
+                                        <input pInputText id="nome" formControlName="nome"
+                                            [ngClass]="{'ng-invalid ng-dirty' : isValidated(formGroup, 'nome')}" />
+                                        <label htmlFor="nome">Nome</label>
+                                    </span>
+                                    <small class="ng-invalid ng-dirty" *ngIf="isValidated(formGroup, 'nome')">Campo
+                                        Obrigatório.</small>
+                                </div>
+                            </div>
+                            <div class="field col">
+                                <div class="form-group">
+                                    <span class="p-float-label">
+                                        <input pInputText id="sobrenome" formControlName="sobrenome"
+                                            [ngClass]="{'ng-invalid ng-dirty' : isValidated(formGroup, 'sobrenome')}" />
+                                        <label htmlFor="sobrenome">Sobrenome</label>
+                                    </span>
+                                    <small class="ng-invalid ng-dirty" *ngIf="isValidated(formGroup, 'sobrenome')">Campo
+                                        Obrigatório.</small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="field col">
-                            <span class="p-float-label">
-                                <input pInputText id="name" [(ngModel)]="product.name"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                                <label htmlFor="username">Sobrenome</label>
-                            </span>
-                            <small class="ng-invalid ng-dirty" *ngIf="submitted && !product.name">Campo
-                                Obrigatório.</small>
+                        <div class="formgrid grid">
+                            <div class="field col" style="padding-top: 15px;">
+                                <div class="form-group">
+                                    <span class="p-float-label">
+                                        <p-inputMask mask="999.999.999-99" id="cpf" formControlName="cpf"
+                                            placeholder="(99) 99999-9999"></p-inputMask>
+                                        <label htmlFor="cpf">CPF</label>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field col" style="padding-top: 15px;">
+                                <div class="form-group">
+                                    <span class="p-float-label">
+                                        <input pInputText id="email"[ngClass]="{'ng-invalid ng-dirty' : isEmailValid(formGroup, 'email')}" formControlName="email" />
+                                        <label htmlFor="email">Email</label>
+                                    </span>
+                                    <small class="ng-invalid ng-dirty" *ngIf="isEmailValid(formGroup, 'email')">Email Inválido.</small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field" style="padding-top: 15px;">
-                        <span class="p-float-label">
-                            <p-inputMask mask="999.999.999-99" [(ngModel)]="product.code" placeholder="(99) 99999-9999"></p-inputMask>
-                            <label htmlFor="username">CPF</label>
-                        </span>
-                    </div>
-                    <div class="formgrid grid">
-                        <div class="field col" style="padding-top: 15px;">
-                            <span class="p-float-label">
-                                <p-inputMask mask="(99) 99999-9999" [(ngModel)]="product.description"
-                                    placeholder="(99) 99999-9999"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.description}"></p-inputMask>
-                                <label htmlFor="username">Celular</label>
-                            </span>
-                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
-                                Obrigatório.</small>
+                        <div class="formgrid grid">
+                            <div class="field col" style="padding-top: 15px;">
+                                <div class="form-group">
+                                    <span class="p-float-label">
+                                        <p-inputMask mask="(99) 99999-9999" id="contato" formControlName="contato"
+                                            placeholder="(99) 99999-9999"
+                                            [ngClass]="{'ng-invalid ng-dirty' : isValidated(formGroup, 'contato')}"></p-inputMask>
+                                        <label htmlFor="contato">Celular</label>
+                                    </span>
+                                    <small class="ng-dirty ng-invalid" *ngIf="isValidated(formGroup, 'contato')">Campo
+                                        Obrigatório.</small>
+                                </div>
+                            </div>
+                            <div class="field col" style="padding-top: 15px;">
+                                <div class="form-group">
+                                    <span class="p-float-label">
+                                        <p-inputMask id="contatoFixo" mask="(99) 99999-9999"
+                                            formControlName="contatoFixo" placeholder="(99) 99999-9999"></p-inputMask>
+                                        <label htmlFor="contatoFixo">Fixo</label>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="field col" style="padding-top: 15px;">
-                            <span class="p-float-label">
-                                <p-inputMask mask="(99) 99999-9999" [(ngModel)]="product.description"
-                                    placeholder="(99) 99999-9999"></p-inputMask>
-                                <label htmlFor="username">Fixo</label>
-                            </span>
-                        </div>
-                    </div>
-                </ng-template>
-
-                <ng-template pTemplate="footer">
-                    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
+                    </form>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="footer">
+                        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
                         (click)="hideDialog()"></button>
-                    <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
+                        <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
                         (click)="saveProduct()"></button>
-                </ng-template>
+                    </ng-template>
             </p-dialog>
 
             <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">

@@ -1,15 +1,29 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
+
 @Component({
     templateUrl: './clientesCadastro.component.html',
     providers: [MessageService]
 })
 export class CadastroClientesComponent implements OnInit {
+    formGroup!: FormGroup;
+
+    first: number = 0;
+
+    rows: number = 10;
+
     productDialog: boolean = false;
 
     deleteProductDialog: boolean = false;
@@ -28,27 +42,28 @@ export class CadastroClientesComponent implements OnInit {
 
     statuses: any[] = [];
 
-    rowsPerPageOptions = [5, 10, 20];
+    rowsPerPageOptions = [10, 20, 30];
 
     items: MenuItem[] = [];
 
     home!: MenuItem;
-    
+
     isNew: boolean = false;
 
     titulo: any = 'Novo Cliente';
 
     @BlockUI() blockUI!: NgBlockUI;
-    
-    constructor(private productService: ProductService, private messageService: MessageService) {
+
+    constructor(private productService: ProductService, private messageService: MessageService, private formBuilder: FormBuilder) {
         this.blockUI.start('Carregando...')
         setTimeout(() => {
             this.blockUI.stop();
         }, 1000)
-     }
+    }
 
     ngOnInit() {
-        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Cadastro de Clientes' }];
+        this.buildFormGroup()
+        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
 
         this.productService.getProducts().then(data => this.products = data);
@@ -66,6 +81,25 @@ export class CadastroClientesComponent implements OnInit {
             { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
             { label: 'OUTOFSTOCK', value: 'outofstock' }
         ];
+    }
+
+    isValidated(formulario: FormGroup, field: string) {
+        return formulario.get(field)?.invalid && (formulario.get(field)?.dirty || formulario.get(field)?.touched || this.submitted);
+    }
+
+    isEmailValid(formulario: FormGroup, field: string) {
+        return formulario.get(field)?.hasError('email');
+      }
+
+    buildFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            nome: ['', Validators.required],
+            email: ['', Validators.email],
+            sobrenome: ['', Validators.required],
+            contato: ['', Validators.required],
+            cpf: [''],
+            contatoFixo: [''],
+        });
     }
 
     openNew() {
@@ -158,6 +192,11 @@ export class CadastroClientesComponent implements OnInit {
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    page(event: any) {
+        this.first = event.first / event.rows;
+        this.rows = event.rows;
     }
 
 }
