@@ -1,3 +1,6 @@
+import { error } from 'console';
+import { AccessComponent } from './../../demo/components/auth/access/access.component';
+import { ClienteService } from './../../services/cliente.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -5,6 +8,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
+import { Cliente } from 'src/app/models/cliente.interface';
 
 interface PageEvent {
     first: number;
@@ -54,7 +58,7 @@ export class CadastroClientesComponent implements OnInit {
 
     @BlockUI() blockUI!: NgBlockUI;
 
-    constructor(private productService: ProductService, private messageService: MessageService, private formBuilder: FormBuilder) {
+    constructor(private productService: ProductService, private messageService: MessageService, private clienteService: ClienteService, private formBuilder: FormBuilder) {
         this.blockUI.start('Carregando...')
         setTimeout(() => {
             this.blockUI.stop();
@@ -89,7 +93,7 @@ export class CadastroClientesComponent implements OnInit {
 
     isEmailValid(formulario: FormGroup, field: string) {
         return formulario.get(field)?.hasError('email');
-      }
+    }
 
     buildFormGroup() {
         this.formGroup = this.formBuilder.group({
@@ -100,6 +104,24 @@ export class CadastroClientesComponent implements OnInit {
             cpf: [''],
             contatoFixo: [''],
         });
+    }
+
+    saveCliente() {
+        console.log(this.formGroup.value)
+        if (this.formGroup.valid) {
+            this.clienteService.salvar(this.formGroup.value)
+                .subscribe((resp) => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possivel realizar essa operação.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.hideDialog()
+                }, (error) => {
+                    console.log(error)
+                })
+        }
     }
 
     openNew() {
