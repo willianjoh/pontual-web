@@ -9,6 +9,7 @@ import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 import { Cliente } from 'src/app/models/cliente.interface';
+import { catchError, of } from 'rxjs';
 
 interface PageEvent {
     first: number;
@@ -110,16 +111,26 @@ export class CadastroClientesComponent implements OnInit {
         console.log(this.formGroup.value)
         if (this.formGroup.valid) {
             this.clienteService.salvar(this.formGroup.value)
-                .subscribe((resp) => {
+                .pipe(
+                    catchError(error => {
+                        if(error == 400){
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                        }
+                        if(error == 500){
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
                     if (resp.id != null) {
                         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
                     } else {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possivel realizar essa operação.', life: 3000 });
                     }
                     this.formGroup.reset()
                     this.hideDialog()
-                }, (error) => {
-                    console.log(error)
                 })
         }
     }
