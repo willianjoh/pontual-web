@@ -1,8 +1,10 @@
+import { map } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Cliente } from '../models/cliente.interface';
 import { Observable, catchError, throwError } from 'rxjs';
+import { Page } from '../models/pageable.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +18,14 @@ export class ClienteService {
     return this.http.post<Cliente>(this.apiURL, cliente)
       .pipe(
         catchError(this.handleError)
-      )
+      );
   }
 
-  buscarClientes(pagina: number, tamanho: number): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(`${this.apiURL}/${pagina}/${tamanho}`)
+  buscarClientes(page: number, size: number): Observable<Page> {
+    return this.http.get<Page>(`${this.apiURL}/?page=${page}&size=${size}`)
+    .pipe(
+      catchError(this.handleError)
+    );
   }
 
   handleError(error: HttpErrorResponse) {

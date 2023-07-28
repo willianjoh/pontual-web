@@ -7,4 +7,14 @@ export interface Cliente {
     celular: string;
     fixo: string;
   }
+
+  export interface ClientePage {
+    id: number;
+    nome: string;
+    sobrenome: string;
+    cpf: string;
+    email: string;
+    contato: string;
+    contatoFixo: string;
+  }
   

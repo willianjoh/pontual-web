@@ -8,8 +8,10 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
-import { Cliente } from 'src/app/models/cliente.interface';
+import { Cliente, ClientePage } from 'src/app/models/cliente.interface';
 import { catchError, of } from 'rxjs';
+import { Pageable } from 'src/app/models/pageable.interface';
+import { stringify } from 'querystring';
 
 interface PageEvent {
     first: number;
@@ -37,6 +39,8 @@ export class CadastroClientesComponent implements OnInit {
 
     products: Product[] = [];
 
+    clientes: ClientePage[] = [];
+
     product: Product = {};
 
     selectedProducts: Product[] = [];
@@ -57,39 +61,45 @@ export class CadastroClientesComponent implements OnInit {
 
     titulo: any = 'Novo Cliente';
 
+    pageable: Pageable = new Pageable();
+
     @BlockUI() blockUI!: NgBlockUI;
 
-    constructor(private productService: ProductService, private messageService: MessageService, private clienteService: ClienteService, private formBuilder: FormBuilder) {
-        this.blockUI.start('Carregando...')
-        setTimeout(() => {
-            this.blockUI.stop();
-        }, 1000)
-    }
+    constructor(
+        private messageService: MessageService,
+        private clienteService: ClienteService,
+        private formBuilder: FormBuilder
+    ) { }
 
     ngOnInit() {
         this.buildFormGroup()
+        this.pageClientes(this.pageable.page, this.pageable.size)
         this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
+    }
 
-        this.productService.getProducts().then(data => this.products = data);
-
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
-        ];
-
-        this.statuses = [
-            { label: 'EM DIA', value: 'instock' },
-            { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
-        ];
+    pageClientes(page: number, size: number) {
+        this.blockUI.start('Carregando...')
+        this.clienteService.buscarClientes(page, size)
+            .pipe(
+                catchError(error => {
+                    if (error == 500) {
+                        this.blockUI.stop();
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                if (resp != null && resp.content) {
+                    this.clientes = resp.content
+                }
+                this.blockUI.stop();
+            })
     }
 
     isValidated(formulario: FormGroup, field: string) {
-        return formulario.get(field)?.invalid && (formulario.get(field)?.dirty || formulario.get(field)?.touched || this.submitted);
+        return formulario.get(field)?.invalid && (formulario.get(field)?.dirty || formulario.get(field)?.touched && this.submitted);
     }
 
     isEmailValid(formulario: FormGroup, field: string) {
@@ -108,15 +118,16 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     saveCliente() {
-        console.log(this.formGroup.value)
+        this.blockUI.start('Carregando...')
         if (this.formGroup.valid) {
             this.clienteService.salvar(this.formGroup.value)
                 .pipe(
                     catchError(error => {
-                        if(error == 400){
+                        this.blockUI.stop();
+                        if (error == 400) {
                             this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
                         }
-                        if(error == 500){
+                        if (error == 500) {
                             this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
                         }
                         this.formGroup.reset()
@@ -127,10 +138,11 @@ export class CadastroClientesComponent implements OnInit {
                 .subscribe(resp => {
                     if (resp.id != null) {
                         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-                    } else {
                     }
                     this.formGroup.reset()
                     this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageClientes(this.pageable.page, this.pageable.size)
                 })
         }
     }
@@ -228,8 +240,9 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     page(event: any) {
-        this.first = event.first / event.rows;
-        this.rows = event.rows;
+        this.pageable.page = event.first / event.rows;
+        this.pageable.size = event.rows;
+        this.pageClientes(this.pageable.page, this.pageable.size)
     }
 
 }
