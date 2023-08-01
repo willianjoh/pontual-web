@@ -31,25 +31,23 @@ export class CadastroClientesComponent implements OnInit {
 
     rows: number = 10;
 
-    productDialog: boolean = false;
+    clienteDialog: boolean = false;
 
-    deleteProductDialog: boolean = false;
+    deleteClienteDialog: boolean = false;
 
-    deleteProductsDialog: boolean = false;
-
-    products: Product[] = [];
+    deleteClientesDialog: boolean = false;
 
     clientes: ClientePage[] = [];
 
+    cliente: Cliente = {};
+
+
     product: Product = {};
 
-    selectedProducts: Product[] = [];
+    selectedClientes: Cliente[] = [];
 
     submitted: boolean = false;
 
-    cols: any[] = [];
-
-    statuses: any[] = [];
 
     rowsPerPageOptions = [10, 20, 30];
 
@@ -74,8 +72,23 @@ export class CadastroClientesComponent implements OnInit {
     ngOnInit() {
         this.buildFormGroup()
         this.pageClientes(this.pageable.page, this.pageable.size)
+        this.breadcrumb()
+    }
+
+    breadcrumb() {
         this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
+    }
+
+    buildFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            nome: ['', Validators.required],
+            email: ['', Validators.email],
+            sobrenome: ['', Validators.required],
+            celular: ['', Validators.required],
+            cpf: [''],
+            fixo: [''],
+        });
     }
 
     pageClientes(page: number, size: number) {
@@ -106,21 +119,19 @@ export class CadastroClientesComponent implements OnInit {
         return formulario.get(field)?.hasError('email');
     }
 
-    buildFormGroup() {
-        this.formGroup = this.formBuilder.group({
-            nome: ['', Validators.required],
-            email: ['', Validators.email],
-            sobrenome: ['', Validators.required],
-            contato: ['', Validators.required],
-            cpf: [''],
-            contatoFixo: [''],
-        });
-    }
 
     saveCliente() {
         this.blockUI.start('Carregando...')
+        if (this.cliente.id) {
+            this.update()
+        } else {
+            this.save()
+        }
+    }
+
+    save() {
         if (this.formGroup.valid) {
-            this.clienteService.salvar(this.formGroup.value)
+            this.clienteService.save(this.formGroup.value)
                 .pipe(
                     catchError(error => {
                         this.blockUI.stop();
@@ -147,92 +158,92 @@ export class CadastroClientesComponent implements OnInit {
         }
     }
 
+    update() {
+        if (this.formGroup.valid) {
+            this.clienteService.update(this.cliente)
+                .pipe(
+                    catchError(error => {
+                        this.blockUI.stop();
+                        if (error == 400) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                        }
+                        if (error == 500) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.cliente = {}
+                    this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageClientes(this.pageable.page, this.pageable.size)
+                })
+        }
+    }
+
     openNew() {
-        this.product = {};
+        this.cliente = {}
         this.submitted = false;
-        this.productDialog = true;
-        this.isNew = true;
+        this.clienteDialog = true;
         this.titulo = "Novo Cliente"
     }
 
     deleteSelectedProducts() {
-        this.deleteProductsDialog = true;
+        this.deleteClientesDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
+    editarCliente(cliente: Cliente) {
+        this.cliente = { ...cliente };
+        this.clienteDialog = true;
         this.titulo = "Editar Cliente"
     }
 
-    deleteProduct(product: Product) {
-        this.deleteProductDialog = true;
-        this.product = { ...product };
+    deleteProduct(cliente: Cliente) {
+        this.deleteClienteDialog = true;
+        this.cliente = { ...cliente };
     }
 
     confirmDeleteSelected() {
-        this.deleteProductsDialog = false;
-        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.selectedProducts = [];
+        this.deleteClientesDialog = false;
+        this.clientes = this.selectedClientes
+        const ids = this.clientes.map(cliente => cliente.id)
+        this.clienteService.deleteAll(ids)
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                this.clientes = []
+                this.selectedClientes = [];
+                this.blockUI.stop();
+                this.pageClientes(this.pageable.page, this.pageable.size)
+            })
     }
 
     confirmDelete() {
-        this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
+        this.deleteClienteDialog = false;
+        this.cliente.id
+        this.clientes = this.clientes.filter(val => val.id !== this.cliente.id);
         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
         this.product = {};
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.clienteDialog = false;
         this.submitted = false;
-    }
-
-    saveProduct() {
-        this.submitted = true;
-
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-                this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente atualizado', life: 3000 });
-            } else {
-                this.product.id = this.createId();
-                this.product.code = this.createId();
-                this.product.image = 'product-placeholder.svg';
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
-                this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente cadastrado', life: 3000 });
-            }
-
-            this.products = [...this.products];
-            this.productDialog = false;
-            this.product = {};
-        }
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
     onGlobalFilter(table: Table, event: Event) {

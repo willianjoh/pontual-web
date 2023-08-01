@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Cliente } from '../models/cliente.interface';
@@ -14,8 +14,29 @@ export class ClienteService {
 
   constructor(private http: HttpClient) { }
 
-  salvar(cliente: Cliente): Observable<Cliente> {
+  save(cliente: Cliente): Observable<Cliente> {
     return this.http.post<Cliente>(this.apiURL, cliente)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  update(cliente: Cliente): Observable<Cliente> {
+    return this.http.put<Cliente>(this.apiURL, cliente)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  deleteAll(ids: any[]): Observable<any> {
+    return this.http.post<any>(`${this.apiURL}/deleteAll`, ids)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiURL}/?id=${id}`)
       .pipe(
         catchError(this.handleError)
       );
@@ -23,9 +44,9 @@ export class ClienteService {
 
   buscarClientes(page: number, size: number): Observable<Page> {
     return this.http.get<Page>(`${this.apiURL}/?page=${page}&size=${size}`)
-    .pipe(
-      catchError(this.handleError)
-    );
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   handleError(error: HttpErrorResponse) {
