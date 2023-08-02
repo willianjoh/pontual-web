@@ -3,6 +3,13 @@ export class Pageable {
     size: number = 10;
 }
 
+export interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
+
 export interface Page {
     content?: Array<any>;
     pageable?: Pageable;
@@ -23,18 +30,17 @@ export interface Pageable {
     pageSize: number;
     pageNumber: number;
     paged: boolean;
+    filtro: string;
     unpaged: boolean;
 };
 
-export interface Sort {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
+export class Sort {
+    empty: boolean = true;
+    sorted: boolean = true;
+    unsorted: boolean = true;
 };
 
-export interface Sort {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
-};
+export class GlobalFilter {
+    filter: string = "";
+}
 

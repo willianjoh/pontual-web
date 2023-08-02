@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { GlobalFilter, Sort } from './../../models/pageable.interface';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -22,7 +23,7 @@ export class CadastroClientesComponent implements OnInit {
 
     deleteClientesDialog: boolean = false;
 
-    clientes: Cliente[] = [];
+    clientes: ClientePage[] | undefined;
 
     pageCliente!: Page;
 
@@ -40,6 +41,10 @@ export class CadastroClientesComponent implements OnInit {
 
     titulo: any = 'Novo Cliente';
 
+    totalRecords: number = 10;
+
+    filter: GlobalFilter = new GlobalFilter();
+
     pageable: Pageable = new Pageable();
 
     @BlockUI() blockUI!: NgBlockUI;
@@ -52,16 +57,19 @@ export class CadastroClientesComponent implements OnInit {
 
     ngOnInit() {
         this.buildFormGroup()
-        this.pageClientes(this.pageable.page, this.pageable.size)
+        this.pageClientes(this.pageable, this.filter)
         this.breadcrumb()
         this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
+            { field: 'nome', header: 'Nome' },
+            { field: 'sobrenome', header: 'Sobrenome' },
+            { field: 'cpf', header: 'CPF' },
+            { field: 'email', header: 'Email' },
+            { field: 'celular', header: 'Celular' },
+            { field: 'fixo', header: 'Fixo' }
         ];
     }
+
+  
 
     breadcrumb() {
         this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
@@ -79,9 +87,9 @@ export class CadastroClientesComponent implements OnInit {
         });
     }
 
-    pageClientes(page: number, size: number) {
+    pageClientes(pageable: Pageable, filter: GlobalFilter) {
         this.blockUI.start('Carregando...')
-        this.clienteService.buscarTodosClientes()
+        this.clienteService.buscarClientes(pageable, filter)
             .pipe(
                 catchError(error => {
                     if (error == 500) {
@@ -93,7 +101,9 @@ export class CadastroClientesComponent implements OnInit {
             )
             .subscribe(resp => {
                 if (resp != null) {
-                    this.clientes = resp
+                    this.clientes = resp.content
+                    let total = resp.totalElements;
+                    this.totalRecords = total;
                 }
                 this.blockUI.stop();
             })
@@ -145,7 +155,7 @@ export class CadastroClientesComponent implements OnInit {
                     this.formGroup.reset()
                     this.hideDialog()
                     this.blockUI.stop();
-                    this.pageClientes(this.pageable.page, this.pageable.size)
+                    this.pageClientes(this.pageable, this.filter)
                 })
         }
     }
@@ -177,7 +187,7 @@ export class CadastroClientesComponent implements OnInit {
                     this.cliente = {}
                     this.hideDialog()
                     this.blockUI.stop();
-                    this.pageClientes(this.pageable.page, this.pageable.size)
+                    this.pageClientes(this.pageable, this.filter)
                 })
         }
     }
@@ -223,7 +233,7 @@ export class CadastroClientesComponent implements OnInit {
                 this.clientes = []
                 this.selectedClientes = [];
                 this.blockUI.stop();
-                this.pageClientes(this.pageable.page, this.pageable.size)
+                this.pageClientes(this.pageable, this.filter)
             })
     }
 
@@ -244,7 +254,7 @@ export class CadastroClientesComponent implements OnInit {
                 this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
                 this.cliente = {}
                 this.blockUI.stop();
-                this.pageClientes(this.pageable.page, this.pageable.size)
+                this.pageClientes(this.pageable, this.filter)
             })
     }
 
@@ -260,7 +270,9 @@ export class CadastroClientesComponent implements OnInit {
     page(event: any) {
         this.pageable.page = event.first / event.rows;
         this.pageable.size = event.rows;
-        this.pageClientes(this.pageable.page, this.pageable.size)
+        this.pageable.sort = event.sortField != undefined ? event.sortField : ""
+        this.filter.filter = event.globalFilter
+        this.pageClientes(this.pageable, this.filter)
     }
 
 }

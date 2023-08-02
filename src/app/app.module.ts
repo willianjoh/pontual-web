@@ -35,6 +35,7 @@ import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServic
 import { CadastroProdutosComponent } from './pages/produtos/produtosCadastro.component';
 import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
 import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
+import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
     declarations: [
@@ -69,6 +70,7 @@ import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component
         DialogModule,
         CalendarModule,
         InputMaskModule,
+        PaginatorModule,
         ProgressSpinnerModule,
         BlockUIModule.forRoot()
     ],

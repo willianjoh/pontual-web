@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Cliente } from '../models/cliente.interface';
 import { Observable, catchError, throwError } from 'rxjs';
-import { Page } from '../models/pageable.interface';
+import { GlobalFilter, Page, Pageable } from '../models/pageable.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -42,8 +42,9 @@ export class ClienteService {
       );
   }
 
-  buscarClientes(page: number, size: number): Observable<Page> {
-    return this.http.get<Page>(`${this.apiURL}/?page=${page}&size=${size}`)
+  buscarClientes(pageable: Pageable, filter: GlobalFilter): Observable<Page> {
+    const options = {params: Object.assign(pageable)};
+    return this.http.post<Page>(`${this.apiURL}/listarTodos`, filter, options)
       .pipe(
         catchError(this.handleError)
       );

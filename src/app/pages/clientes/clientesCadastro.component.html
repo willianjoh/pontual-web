@@ -16,9 +16,10 @@
                     </div>
                 </ng-template>
             </p-toolbar>
-            <p-table #dt [value]="clientes" responsiveLayout="scroll" [rows]="10" [columns]="cols"
-                [rowsPerPageOptions]="[10,20,30]" [globalFilterFields]="['nome','sobrenome','cpf','email','contato']" 
-                [paginator]="true" [showCurrentPageReport]="true"
+            <p-table #dt [value]="clientes!" [columns]="cols" responsiveLayout="scroll" [rows]="10" [columns]="cols"
+                [rowsPerPageOptions]="[10,20,30]" 
+                [paginator]="true" [showCurrentPageReport]="true" [lazy]="true" [totalRecords]="totalRecords" 
+                (onLazyLoad)="page($event)"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
                 [(selection)]="selectedClientes" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
@@ -41,8 +42,8 @@
                         <th pSortableColumn="sobrenome">Sobrenome <p-sortIcon field="sobrenome"></p-sortIcon></th>
                         <th pSortableColumn="cpf">CPF<p-sortIcon field="cpf"></p-sortIcon></th>
                         <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-                        <th pSortableColumn="contato">Celular <p-sortIcon field="celular"></p-sortIcon></th>
-                        <th pSortableColumn="contatoFixo">Fixo <p-sortIcon field="fixo"></p-sortIcon></th>
+                        <th pSortableColumn="celular">Celular <p-sortIcon field="celular"></p-sortIcon></th>
+                        <th pSortableColumn="fixo">Fixo <p-sortIcon field="fixo"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
