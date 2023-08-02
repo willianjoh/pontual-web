@@ -1,41 +1,40 @@
+import { CommonModule, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { CommonModule, HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common';
-import { AppComponent } from './app.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BlockUIModule } from 'ng-block-ui';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { RatingModule } from 'primeng/rating';
+import { RippleModule } from 'primeng/ripple';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
 import { AppRoutingModule } from './app-routing.module';
-import { AppLayoutModule } from './layout/app.layout.module';
+import { AppComponent } from './app.component';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
-import { ProductService } from './demo/service/product.service';
 import { CountryService } from './demo/service/country.service';
 import { CustomerService } from './demo/service/customer.service';
 import { EventService } from './demo/service/event.service';
 import { IconService } from './demo/service/icon.service';
 import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
-import { TableModule } from 'primeng/table';
-import { FileUploadModule } from 'primeng/fileupload';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DialogModule } from 'primeng/dialog';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { DropdownModule } from 'primeng/dropdown';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { InputTextModule } from 'primeng/inputtext';
-import { RatingModule } from 'primeng/rating';
-import { ToolbarModule } from 'primeng/toolbar';
-import { PaginatorModule } from 'primeng/paginator';
-import { ToastModule } from 'primeng/toast';
-import { RippleModule } from 'primeng/ripple';
-import { ButtonModule } from 'primeng/button';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ProductService } from './demo/service/product.service';
+import { AppLayoutModule } from './layout/app.layout.module';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
-import { InputMaskModule } from 'primeng/inputmask';
-import { CadastroProdutosComponent } from './pages/produtos/produtosCadastro.component';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { BlockUIModule } from 'ng-block-ui';
-import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
-import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
-import { CalendarModule } from 'primeng/calendar';
 import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServicoCadastro.component';
+import { CadastroProdutosComponent } from './pages/produtos/produtosCadastro.component';
+import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
+import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
 
 @NgModule({
     declarations: [
@@ -71,7 +70,6 @@ import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServic
         CalendarModule,
         InputMaskModule,
         ProgressSpinnerModule,
-        PaginatorModule,
         BlockUIModule.forRoot()
     ],
     providers: [

@@ -4,6 +4,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
+import { Pageable } from 'src/app/models/pageable.interface';
 
 @Component({
     templateUrl: './produtosCadastro.component.html',
@@ -33,6 +34,8 @@ export class CadastroProdutosComponent implements OnInit {
     items: MenuItem[] = [];
 
     home!: MenuItem;
+
+    pageable: Pageable = new Pageable();
     
     isNew: boolean = false;
 
@@ -162,6 +165,11 @@ export class CadastroProdutosComponent implements OnInit {
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    page(event: any) {
+        this.pageable.page = event.first / event.rows;
+        this.pageable.size = event.rows;
     }
 
 }

@@ -4,17 +4,17 @@ export class Pageable {
 }
 
 export interface Page {
-    content: Array<any>;
-    pageable: Pageable;
-    last: boolean;
+    content?: Array<any>;
+    pageable?: Pageable;
+    last?: boolean;
     totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
-    sort: Sort;
-    first: boolean;
-    numberOfElements: number;
-    empty: boolean;
+    totalPages?: number;
+    size?: number;
+    number?: number;
+    sort?: Sort;
+    first?: boolean;
+    numberOfElements?: number;
+    empty?: boolean;
 };
 
 export interface Pageable {

@@ -1,35 +1,20 @@
-import { error } from 'console';
-import { AccessComponent } from './../../demo/components/auth/access/access.component';
-import { ClienteService } from './../../services/cliente.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
-import { Cliente, ClientePage } from 'src/app/models/cliente.interface';
 import { catchError, of } from 'rxjs';
-import { Pageable } from 'src/app/models/pageable.interface';
-import { stringify } from 'querystring';
-
-interface PageEvent {
-    first: number;
-    rows: number;
-    page: number;
-    pageCount: number;
-}
+import { Cliente, ClientePage } from 'src/app/models/cliente.interface';
+import { Page, Pageable } from 'src/app/models/pageable.interface';
+import { ClienteService } from './../../services/cliente.service';
 
 @Component({
     templateUrl: './clientesCadastro.component.html',
     providers: [MessageService]
 })
 export class CadastroClientesComponent implements OnInit {
+
     formGroup!: FormGroup;
-
-    first: number = 0;
-
-    rows: number = 10;
 
     clienteDialog: boolean = false;
 
@@ -37,25 +22,21 @@ export class CadastroClientesComponent implements OnInit {
 
     deleteClientesDialog: boolean = false;
 
-    clientes: ClientePage[] = [];
+    clientes: Cliente[] = [];
+
+    pageCliente!: Page;
 
     cliente: Cliente = {};
-
-
-    product: Product = {};
 
     selectedClientes: Cliente[] = [];
 
     submitted: boolean = false;
 
-
-    rowsPerPageOptions = [10, 20, 30];
+    cols: any[] = [];
 
     items: MenuItem[] = [];
 
     home!: MenuItem;
-
-    isNew: boolean = false;
 
     titulo: any = 'Novo Cliente';
 
@@ -73,6 +54,13 @@ export class CadastroClientesComponent implements OnInit {
         this.buildFormGroup()
         this.pageClientes(this.pageable.page, this.pageable.size)
         this.breadcrumb()
+        this.cols = [
+            { field: 'product', header: 'Product' },
+            { field: 'price', header: 'Price' },
+            { field: 'category', header: 'Category' },
+            { field: 'rating', header: 'Reviews' },
+            { field: 'inventoryStatus', header: 'Status' }
+        ];
     }
 
     breadcrumb() {
@@ -93,7 +81,7 @@ export class CadastroClientesComponent implements OnInit {
 
     pageClientes(page: number, size: number) {
         this.blockUI.start('Carregando...')
-        this.clienteService.buscarClientes(page, size)
+        this.clienteService.buscarTodosClientes()
             .pipe(
                 catchError(error => {
                     if (error == 500) {
@@ -104,11 +92,15 @@ export class CadastroClientesComponent implements OnInit {
                 })
             )
             .subscribe(resp => {
-                if (resp != null && resp.content) {
-                    this.clientes = resp.content
+                if (resp != null) {
+                    this.clientes = resp
                 }
                 this.blockUI.stop();
             })
+    }
+
+    pageteste(event: any) {
+        console.log(event)
     }
 
     isValidated(formulario: FormGroup, field: string) {
@@ -119,9 +111,7 @@ export class CadastroClientesComponent implements OnInit {
         return formulario.get(field)?.hasError('email');
     }
 
-
     saveCliente() {
-        this.blockUI.start('Carregando...')
         if (this.cliente.id) {
             this.update()
         } else {
@@ -130,7 +120,9 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     save() {
+        this.submitted = true;
         if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
             this.clienteService.save(this.formGroup.value)
                 .pipe(
                     catchError(error => {
@@ -159,7 +151,9 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     update() {
+        this.submitted = true;
         if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
             this.clienteService.update(this.cliente)
                 .pipe(
                     catchError(error => {
@@ -195,7 +189,7 @@ export class CadastroClientesComponent implements OnInit {
         this.titulo = "Novo Cliente"
     }
 
-    deleteSelectedProducts() {
+    deleteSelectedClientes() {
         this.deleteClientesDialog = true;
     }
 
@@ -205,7 +199,7 @@ export class CadastroClientesComponent implements OnInit {
         this.titulo = "Editar Cliente"
     }
 
-    deleteProduct(cliente: Cliente) {
+    deleteCliente(cliente: Cliente) {
         this.deleteClienteDialog = true;
         this.cliente = { ...cliente };
     }
@@ -236,9 +230,22 @@ export class CadastroClientesComponent implements OnInit {
     confirmDelete() {
         this.deleteClienteDialog = false;
         this.cliente.id
-        this.clientes = this.clientes.filter(val => val.id !== this.cliente.id);
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.product = {};
+        this.clienteService.delete(this.cliente.id)
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                this.cliente = {}
+                this.blockUI.stop();
+                this.pageClientes(this.pageable.page, this.pageable.size)
+            })
     }
 
     hideDialog() {

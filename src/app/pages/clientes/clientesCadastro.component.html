@@ -11,14 +11,14 @@
                         <button id="openNew" pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
                             class="p-button-success mr-2" (click)="openNew()"></button>
                         <button id="deleteAll" pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
-                            class="p-button-danger" (click)="deleteSelectedProducts()"
+                            class="p-button-danger" (click)="deleteSelectedClientes()"
                             [disabled]="!selectedClientes || !selectedClientes.length"></button>
                     </div>
                 </ng-template>
             </p-toolbar>
-            <p-table #dt [value]="clientes" responsiveLayout="scroll" [rows]="10"
-                [globalFilterFields]="['nome','sobrenome','cpf','email','contato']" [paginator]="true"
-                [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true" (onPage)="page($event)"
+            <p-table #dt [value]="clientes" responsiveLayout="scroll" [rows]="10" [columns]="cols"
+                [rowsPerPageOptions]="[10,20,30]" [globalFilterFields]="['nome','sobrenome','cpf','email','contato']" 
+                [paginator]="true" [showCurrentPageReport]="true"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
                 [(selection)]="selectedClientes" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
@@ -84,7 +84,7 @@
                                     class="p-button-rounded p-button-success mr-2"
                                     (click)="editarCliente(cliente)"></button>
                                 <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
-                                    (click)="deleteProduct(cliente)"></button>
+                                    (click)="deleteCliente(cliente)"></button>
                             </div>
                         </td>
                     </tr>
@@ -99,21 +99,22 @@
                                 <div class="form-group">
                                     <span class="p-float-label">
                                         <input pInputText id="nome" formControlName="nome" [(ngModel)]="cliente.nome"
-                                            [ngClass]="{'ng-invalid ng-dirty' : isValidated(formGroup, 'nome')}" />
+                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.nome}" />
                                         <label htmlFor="nome">Nome</label>
                                     </span>
-                                    <small class="ng-invalid ng-dirty" *ngIf="isValidated(formGroup, 'nome')">Campo
+                                    <small class="ng-invalid ng-dirty" *ngIf="submitted && !cliente.nome">Campo
                                         Obrigatório.</small>
                                 </div>
                             </div>
                             <div class="field col">
                                 <div class="form-group">
                                     <span class="p-float-label">
-                                        <input pInputText id="sobrenome" formControlName="sobrenome"  [(ngModel)]="cliente.sobrenome"
-                                            [ngClass]="{'ng-invalid ng-dirty' : isValidated(formGroup, 'sobrenome')}" />
+                                        <input pInputText id="sobrenome" formControlName="sobrenome"
+                                            [(ngModel)]="cliente.sobrenome"
+                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.sobrenome}" />
                                         <label htmlFor="sobrenome">Sobrenome</label>
                                     </span>
-                                    <small class="ng-invalid ng-dirty" *ngIf="isValidated(formGroup, 'sobrenome')">Campo
+                                    <small class="ng-invalid ng-dirty" *ngIf="submitted && !cliente.sobrenome">Campo
                                         Obrigatório.</small>
                                 </div>
                             </div>
@@ -122,8 +123,8 @@
                             <div class="field col" style="padding-top: 15px;">
                                 <div class="form-group">
                                     <span class="p-float-label">
-                                        <p-inputMask mask="999.999.999-99" id="cpf" formControlName="cpf"  [(ngModel)]="cliente.cpf"
-                                            placeholder="(99) 99999-9999"></p-inputMask>
+                                        <p-inputMask mask="999.999.999-99" id="cpf" formControlName="cpf"
+                                            [(ngModel)]="cliente.cpf" placeholder="(99) 99999-9999"></p-inputMask>
                                         <label htmlFor="cpf">CPF</label>
                                     </span>
                                 </div>
@@ -131,11 +132,13 @@
                             <div class="field col" style="padding-top: 15px;">
                                 <div class="form-group">
                                     <span class="p-float-label">
-                                        <input pInputText id="email"[ngClass]="{'ng-invalid ng-dirty' : isEmailValid(formGroup, 'email')}" 
-                                        formControlName="email" [(ngModel)]="cliente.email"/>
+                                        <input pInputText id="email"
+                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && isEmailValid(formGroup, 'email')}"
+                                            formControlName="email" [(ngModel)]="cliente.email" />
                                         <label htmlFor="email">Email</label>
                                     </span>
-                                    <small class="ng-invalid ng-dirty" *ngIf="isEmailValid(formGroup, 'email')">Email Inválido.</small>
+                                    <small class="ng-invalid ng-dirty" *ngIf="isEmailValid(formGroup, 'email')">Email
+                                        Inválido.</small>
                                 </div>
                             </div>
                         </div>
@@ -144,18 +147,18 @@
                                 <div class="form-group">
                                     <span class="p-float-label">
                                         <p-inputMask mask="(99) 99999-9999" id="celular" formControlName="celular"
-                                            placeholder="(99) 99999-9999"  [(ngModel)]="cliente.celular"
-                                            [ngClass]="{'ng-invalid ng-dirty' : isValidated(formGroup, 'celular')}"></p-inputMask>
+                                            placeholder="(99) 99999-9999" [(ngModel)]="cliente.celular"
+                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.celular}"></p-inputMask>
                                         <label htmlFor="celular">Celular</label>
                                     </span>
-                                    <small class="ng-dirty ng-invalid" *ngIf="isValidated(formGroup, 'celular')">Campo
+                                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.celular">Campo
                                         Obrigatório.</small>
                                 </div>
                             </div>
                             <div class="field col" style="padding-top: 15px;">
                                 <div class="form-group">
                                     <span class="p-float-label">
-                                        <p-inputMask id="fixo" mask="(99) 99999-9999"  [(ngModel)]="cliente.fixo"
+                                        <p-inputMask id="fixo" mask="(99) 99999-9999" [(ngModel)]="cliente.fixo"
                                             formControlName="fixo" placeholder="(99) 99999-9999"></p-inputMask>
                                         <label htmlFor="fixo">Fixo</label>
                                     </span>
@@ -163,20 +166,20 @@
                             </div>
                         </div>
                     </form>
-                    </ng-template>
-                    
-                    <ng-template pTemplate="footer">
-                        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
                         (click)="hideDialog()"></button>
-                        <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
+                    <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
                         (click)="saveCliente()"></button>
-                    </ng-template>
+                </ng-template>
             </p-dialog>
 
             <p-dialog [(visible)]="deleteClienteDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                    <span *ngIf="product">Deseja deletar o cliente: <b>{{product.name}}</b>?</span>
+                    <span *ngIf="cliente">Deseja deletar o cliente: <b>{{cliente.nome}}</b>?</span>
                 </div>
                 <ng-template pTemplate="footer">
                     <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"

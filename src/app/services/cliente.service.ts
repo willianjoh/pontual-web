@@ -29,14 +29,14 @@ export class ClienteService {
   }
 
   deleteAll(ids: any[]): Observable<any> {
-    return this.http.post<any>(`${this.apiURL}/deleteAll`, ids)
+    return this.http.post<any>(`${this.apiURL}/deleteAllById`, ids)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiURL}/?id=${id}`)
+  delete(id: any): Observable<any> {
+    return this.http.delete<any>(`${this.apiURL}/${id}`)
       .pipe(
         catchError(this.handleError)
       );
@@ -49,6 +49,12 @@ export class ClienteService {
       );
   }
 
+  buscarTodosClientes(): Observable<Cliente []> {
+    return this.http.get<Cliente []>(`${this.apiURL}/todos`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
   handleError(error: HttpErrorResponse) {
     let errorCode;
     if (error.error instanceof ErrorEvent) {
