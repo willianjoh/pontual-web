@@ -69,8 +69,6 @@ export class CadastroClientesComponent implements OnInit {
         ];
     }
 
-  
-
     breadcrumb() {
         this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
@@ -107,10 +105,6 @@ export class CadastroClientesComponent implements OnInit {
                 }
                 this.blockUI.stop();
             })
-    }
-
-    pageteste(event: any) {
-        console.log(event)
     }
 
     isValidated(formulario: FormGroup, field: string) {
