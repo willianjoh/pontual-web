@@ -1,33 +1,33 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
-import { Pageable } from 'src/app/models/pageable.interface';
+import { GlobalFilter, Page, Pageable } from 'src/app/models/pageable.interface';
+import { Produto } from 'src/app/models/produto.interface';
+import { ProdutoService } from 'src/app/services/produto.service';
 
 @Component({
     templateUrl: './produtosCadastro.component.html',
     providers: [MessageService]
 })
 export class CadastroProdutosComponent implements OnInit {
-    productDialog: boolean = false;
+    produtoDialog: boolean = false;
 
-    deleteProductDialog: boolean = false;
+    deleteProdutoDialog: boolean = false;
 
-    deleteProductsDialog: boolean = false;
+    deleteProdutosDialog: boolean = false;
 
-    products: Product[] = [];
+    produtos: Produto [] | undefined;
 
-    product: Product = {};
+    produto: Produto = {};
 
-    selectedProducts: Product[] = [];
+    selectedProdutos: Produto[] = [];
 
     submitted: boolean = false;
-
-    cols: any[] = [];
-
-    statuses: any[] = [];
 
     rowsPerPageOptions = [5, 10, 20];
 
@@ -36,131 +36,207 @@ export class CadastroProdutosComponent implements OnInit {
     home!: MenuItem;
 
     pageable: Pageable = new Pageable();
-    
-    isNew: boolean = false;
 
-    titulo: string = 'Novo Cliente';
-    showSpinner = false
+    formGroup!: FormGroup;
+
+    pageProduto!: Page;
+
+    totalRecords: number = 10;
+
+    titulo!: string;
+
+    filter: GlobalFilter = new GlobalFilter();
 
     @BlockUI() blockUI!: NgBlockUI;
 
-    constructor(private productService: ProductService, private messageService: MessageService) {
-        this.blockUI.start('Carregando...')
-        setTimeout(() => {
-            this.blockUI.stop();
-        }, 1000)
-     }
+    constructor(private produtoService: ProdutoService,
+        private messageService: MessageService,
+        private formBuilder: FormBuilder) { }
 
     ngOnInit() {
-        this.items = [{ label: 'Produtos' }, { label: 'Produtos' }, { label: 'Cadastro de Produtos' }];
+        this.buildFormGroup()
+        this.pageProdutos(this.pageable, this.filter)
+        this.items = [{ label: 'Produtos' }, { label: 'Produtos' }, { label: 'Gerenciamento de Produtos' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
-        this.showSpinner= true
-        this.productService.getProducts().then(data => this.products = data);
-
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
-        ];
-
-        this.statuses = [
-            { label: 'EM DIA', value: 'instock' },
-            { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
-        ];
-        this.showSpinner= false
     }
 
+    isValidated(formulario: FormGroup, field: string) {
+        return formulario.get(field)?.invalid && (formulario.get(field)?.dirty || formulario.get(field)?.touched && this.submitted);
+    }
+
+    buildFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            codigo: ['', Validators.required],
+            nome: ['', Validators.required],
+            modelo: ['', Validators.required],
+            valor: [Validators.required],
+            descricao: ['', Validators.maxLength(255)],
+        });
+    }
+
+    saveProduto() {
+        if (this.produto.id) {
+            this.update()
+        } else {
+            this.save()
+        }
+    }
+
+    save() {
+        this.submitted = true;
+        console.log(this.formGroup.value)
+        if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
+            this.produtoService.save(this.formGroup.value)
+                .pipe(
+                    catchError(error => {
+                        this.blockUI.stop();
+                        if (error == 400) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                        }
+                        if (error == 500) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageProdutos(this.pageable, this.filter)
+                })
+        }
+    }
+
+    pageProdutos(pageable: Pageable, filter: GlobalFilter) {
+        this.blockUI.start('Carregando...')
+        this.produtoService.buscarProdutos(pageable, filter)
+            .pipe(
+                catchError(error => {
+                    if (error == 500) {
+                        this.blockUI.stop();
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                if (resp != null) {
+                    this.produtos = resp.content
+                    let total = resp.totalElements;
+                    this.totalRecords = total;
+                }
+                this.blockUI.stop();
+            })
+    }
+
+    update() {
+        this.submitted = true;
+        if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
+            this.produtoService.update(this.produto)
+                .pipe(
+                    catchError(error => {
+                        this.blockUI.stop();
+                        if (error == 400) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Produto já existe na base de dados.", life: 3000 });
+                        }
+                        if (error == 500) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.produto = {}
+                    this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageProdutos(this.pageable, this.filter)
+                })
+        }
+    }
+
+
     openNew() {
-        this.product = {};
+        this.produto = {};
         this.submitted = false;
-        this.productDialog = true;
-        this.isNew = true;
+        this.produtoDialog = true;
         this.titulo = "Novo Produto"
     }
 
     deleteSelectedProducts() {
-        this.deleteProductsDialog = true;
+        this.deleteProdutosDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
+    editarProduto(produto: Produto) {
+        this.produto = { ...produto };
+        this.produtoDialog = true;
         this.titulo = "Editar Produto"
     }
 
-    deleteProduct(product: Product) {
-        this.deleteProductDialog = true;
-        this.product = { ...product };
+    deleteProduto(produto: Produto) {
+        this.deleteProdutoDialog = true;
+        this.produto = { ...produto };
     }
 
     confirmDeleteSelected() {
-        this.deleteProductsDialog = false;
-        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.selectedProducts = [];
+        this.deleteProdutosDialog = false;
+        this.produtos = this.selectedProdutos
+        const ids = this.produtos.map(produtos => produtos.id)
+        this.produtoService.deleteAll(ids)
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                this.produtos = []
+                this.selectedProdutos = [];
+                this.blockUI.stop();
+                this.pageProdutos(this.pageable, this.filter)
+            })
     }
 
     confirmDelete() {
-        this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.product = {};
+        this.deleteProdutoDialog = false;
+        this.produtoService.delete(this.produto.id)
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                this.produto = {}
+                this.blockUI.stop();
+                this.pageProdutos(this.pageable, this.filter)
+            })
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.produtoDialog = false;
         this.submitted = false;
-    }
-
-    saveProduct() {
-        this.submitted = true;
-
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-                this.blockUI.start('Carregando...')
-                this.products[this.findIndexById(this.product.id)] = this.product;
-                this.blockUI.stop();
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-            } else {
-                this.product.id = this.createId();
-                this.product.code = this.createId();
-                this.product.image = 'product-placeholder.svg';
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
-                this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-            }
-
-            this.products = [...this.products];
-            this.productDialog = false;
-            this.product = {};
-        }
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -170,6 +246,9 @@ export class CadastroProdutosComponent implements OnInit {
     page(event: any) {
         this.pageable.page = event.first / event.rows;
         this.pageable.size = event.rows;
+        this.pageable.sort = event.sortField != undefined ? event.sortField : ""
+        this.filter.filter = event.globalFilter
+        this.pageProdutos(this.pageable, this.filter)
     }
 
 }

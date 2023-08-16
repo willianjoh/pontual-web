@@ -25,8 +25,6 @@ export class CadastroClientesComponent implements OnInit {
 
     clientes: ClientePage[] | undefined;
 
-    pageCliente!: Page;
-
     cliente: Cliente = {};
 
     selectedClientes: Cliente[] = [];
@@ -233,7 +231,6 @@ export class CadastroClientesComponent implements OnInit {
 
     confirmDelete() {
         this.deleteClienteDialog = false;
-        this.cliente.id
         this.clienteService.delete(this.cliente.id)
             .pipe(
                 catchError(error => {

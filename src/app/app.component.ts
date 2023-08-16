@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { LayoutService } from './layout/service/app.layout.service';
+import { CalendarOptions } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
+
+    calendarOptions: CalendarOptions = {
+        initialView: 'dayGridMonth',
+        plugins: [dayGridPlugin]
+    };
+
     pt = {
         firstDayOfWeek: 0,
         dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],

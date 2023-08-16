@@ -36,6 +36,7 @@ import { CadastroProdutosComponent } from './pages/produtos/produtosCadastro.com
 import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
 import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
 import { PaginatorModule } from 'primeng/paginator';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
     declarations: [
@@ -72,6 +73,7 @@ import { PaginatorModule } from 'primeng/paginator';
         InputMaskModule,
         PaginatorModule,
         ProgressSpinnerModule,
+        FullCalendarModule,
         BlockUIModule.forRoot()
     ],
     providers: [

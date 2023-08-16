@@ -43,7 +43,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Produtos', icon: 'pi pi-fw pi-bars',
                         items: [
                             {
-                                label: 'Cadastro de produtos', icon: 'pi pi-fw pi-bars', routerLink: ['produtos/cadastro'],
+                                label: 'Gerenciamento de produtos', icon: 'pi pi-fw pi-bars', routerLink: ['produtos/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório de produtos', icon: 'pi pi-fw pi-file-pdf',
