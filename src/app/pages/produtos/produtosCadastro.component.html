@@ -17,8 +17,9 @@
                 </ng-template>
             </p-toolbar>
             <p-table #dt [value]="produtos!" responsiveLayout="scroll" [rows]="10"
-                [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
-                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" (onPage)="page($event)"
+            [rowsPerPageOptions]="[10,20,30]" 
+            [paginator]="true" [showCurrentPageReport]="true" [lazy]="true" [totalRecords]="totalRecords" 
+            (onLazyLoad)="page($event)"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
                 [(selection)]="selectedProdutos" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
@@ -26,7 +27,7 @@
                         <h5 class="m-0">Gerenciamento de Produtos</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                            <input id="pesquisa" pInputText type="text" (input)="onGlobalFilter(dt, $event)"
                                 placeholder="Pesquisar..." class="w-full sm:w-auto" />
                         </span>
                     </div>
@@ -62,7 +63,7 @@
                         </td>
                         <td style="width:15%; min-width:10rem;">
                             <span class="p-column-title">Preço</span>
-                            {{produto.valor}}
+                            {{"R$" + produto.valor}}
                         </td>
                         <td style="width:32%; min-width:10rem;">
                             <span class="p-column-title">Descricao</span>
@@ -87,18 +88,18 @@
                         <div class="formgrid grid">
                             <div class="field col">
                                 <span class="p-float-label">
-                                    <input pInputText id="name"  formControlName="codigo" [(ngModel)]="produto.codigo"
+                                    <input pInputText id="codigo"  formControlName="codigo" [(ngModel)]="produto.codigo"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !produto.codigo}" />
-                                    <label htmlFor="username">Código</label>
+                                    <label for="codigo">Código</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !produto.codigo">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col">
                                 <span class="p-float-label">
-                                    <input pInputText id="name" formControlName="nome" [(ngModel)]="produto.nome"
+                                    <input pInputText id="nome" formControlName="nome" [(ngModel)]="produto.nome"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !produto.nome}" />
-                                    <label htmlFor="username">Nome do produto</label>
+                                    <label for="nome">Nome do produto</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !produto.nome">Campo
                                     Obrigatório.</small>
@@ -107,19 +108,18 @@
                         <div class="formgrid grid">
                             <div class="field col" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <input pInputText id="price" formControlName="modelo" [(ngModel)]="produto.modelo"
+                                    <input pInputText id="modelo" formControlName="modelo" [(ngModel)]="produto.modelo"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !produto.modelo}" />
-                                    <label for="float-input">Modelo</label>
+                                    <label for="modelo">Modelo</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !produto.modelo">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <p-inputNumber id="price" formControlName="valor" [(ngModel)]="produto.valor" mode="currency" currency="BRL"
-                                        locale="pt-BR"
+                                    <p-inputNumber formControlName="valor" [(ngModel)]="produto.valor" mode="currency" currency="BRL" locale="pt-BR"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !produto.valor}"></p-inputNumber>
-                                    <label for="float-input">Valor</label>
+                                    <label>Preço</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !produto.valor">Campo
                                     Obrigatório.</small>
@@ -128,9 +128,9 @@
                         <div class="formgrid grid">
                             <div class="field col" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <textarea id="description" formControlName="descricao" pInputTextarea [(ngModel)]="produto.descricao" rows="3"
+                                    <textarea id="descricao" formControlName="descricao" pInputTextarea [(ngModel)]="produto.descricao" rows="3"
                                         cols="20"></textarea>
-                                    <label for="float-input">Descrição</label>
+                                    <label for="descricao">Descrição</label>
                                 </span>
                             </div>
                         </div>

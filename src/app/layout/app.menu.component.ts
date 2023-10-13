@@ -59,7 +59,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Tipos de serviços', icon: 'pi pi-fw pi-wrench',
                         items: [
                             {
-                                label: 'Cadastro de serviços', icon: 'pi pi-fw pi-wrench', routerLink: ['servico/cadastro'],
+                                label: 'Gerenciamento de serviços', icon: 'pi pi-fw pi-wrench', routerLink: ['servico/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório de serviços', icon: 'pi pi-fw pi-file-pdf',

@@ -92,7 +92,7 @@ export class CadastroProdutosComponent implements OnInit {
                     catchError(error => {
                         this.blockUI.stop();
                         if (error == 400) {
-                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Produto já existe na base de dados.", life: 3000 });
                         }
                         if (error == 500) {
                             this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });

@@ -11,23 +11,23 @@
                         <button pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
                             class="p-button-success mr-2" (click)="openNew()"></button>
                         <button pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
-                            class="p-button-danger" (click)="deleteSelectedProducts()"
-                            [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                            class="p-button-danger" (click)="deleteSelectedServicos()"
+                            [disabled]="!selectedServicos || !selectedServicos.length"></button>
                     </div>
                 </ng-template>
             </p-toolbar>
-            <p-table #dt [value]="products" [columns]="cols" responsiveLayout="scroll" [rows]="10"
-                [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
-                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+            <p-table #dt [value]="servicos!" responsiveLayout="scroll" [rows]="10"
+                [rowsPerPageOptions]="[10,20,30]" [paginator]="true" [showCurrentPageReport]="true" [lazy]="true"
+                [totalRecords]="totalRecords" (onLazyLoad)="page($event)"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
-                [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                [(selection)]="selectedServicos" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Gerenciamento de Serviços</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Pesquisar..."
-                                class="w-full sm:w-auto" />
+                            <input id="pesquisa" pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Pesquisar..." class="w-full sm:w-auto" />
                         </span>
                     </div>
                 </ng-template>
@@ -36,112 +36,117 @@
                         <th style="width: 3rem">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
-                        <th pSortableColumn="code">Código<p-sortIcon field="code"></p-sortIcon></th>
-                        <th pSortableColumn="name">Tipo<p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="price">Descrição<p-sortIcon field="price"></p-sortIcon></th>
-                        <th pSortableColumn="category">Valor<p-sortIcon field="category"></p-sortIcon></th>
+                        <th pSortableColumn="codigo">Código<p-sortIcon field="codigo"></p-sortIcon></th>
+                        <th pSortableColumn="tipo">Tipo<p-sortIcon field="tipo"></p-sortIcon></th>
+                        <th pSortableColumn="preco">Preço<p-sortIcon field="preco"></p-sortIcon></th>
+                        <th pSortableColumn="descricao">Descricao<p-sortIcon field="descricao"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-product>
+                <ng-template pTemplate="body" let-servico>
                     <tr>
                         <td>
-                            <p-tableCheckbox [value]="product"></p-tableCheckbox>
+                            <p-tableCheckbox [value]="servico"></p-tableCheckbox>
                         </td>
                         <td style="width:20%; min-width:10rem;"><span class="p-column-title">Code</span>
-                            {{product.code || product.id}}
+                            {{servico.codigo || servico.id}}
                         </td>
-                        <td style="width:22%; min-width:10rem;">
+                        <td style="width:26%; min-width:10rem;">
                             <span class="p-column-title">Tipo</span>
-                            {{product.name}}
+                            {{servico.tipo}}
+                        </td>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Preço</span>
+                            {{"R$" + servico.preco}}
                         </td>
                         <td style="width:23%; min-width:10rem;">
                             <span class="p-column-title">Descrição</span>
-                            {{product.name}}
-                        </td>
-                        <td style="width:20%; min-width:10rem;">
-                            <span class="p-column-title">Valor</span>
-                            {{product.category}}
+                            {{servico.descricao}}
                         </td>
                         <td>
                             <div class="flex">
                                 <button pButton pRipple icon="pi pi-pencil"
                                     class="p-button-rounded p-button-success mr-2"
-                                    (click)="editProduct(product)"></button>
+                                    (click)="editarServico(servico)"></button>
                                 <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
-                                    (click)="deleteProduct(product)"></button>
+                                    (click)="deleteServico(servico)"></button>
                             </div>
                         </td>
                     </tr>
                 </ng-template>
             </p-table>
-            <p-dialog [(visible)]="productDialog" [style]="{width: '800px'}" header="{{titulo}}" [modal]="true"
+            <p-dialog [(visible)]="servicoDialog" [style]="{width: '800px'}" header="{{titulo}}" [modal]="true"
                 class="p-fluid">
                 <ng-template pTemplate="content">
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <span class="p-float-label">
-                                <input pInputText id="name" [(ngModel)]="product.name"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                                <label htmlFor="username">Código</label>
-                            </span>
-                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo Obrigatório.</small>
+                    <form [formGroup]="formGroup">
+                        <div class="formgrid grid">
+                            <div class="field col">
+                                <span class="p-float-label">
+                                    <input pInputText id="codigo" [(ngModel)]="servico.codigo" formControlName="codigo"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !servico.codigo}" />
+                                    <label for="codigo">Código</label>
+                                </span>
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !servico.codigo">Campo
+                                    Obrigatório.</small>
+                            </div>
+                            <div class="field col">
+                                <span class="p-float-label">
+                                    <input pInputText id="tipo" [(ngModel)]="servico.tipo" formControlName="tipo"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !servico.tipo}" />
+                                    <label for="tipo">Tipo</label>
+                                </span>
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !servico.tipo">Campo
+                                    Obrigatório.</small>
+                            </div>
+                            <div class="field col">
+                                <span class="p-float-label">
+                                    <p-inputNumber [(ngModel)]="servico.preco" formControlName="preco" mode="currency"
+                                        currency="BRL" locale="pt-BR"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !servico.preco}"></p-inputNumber>
+                                    <label>Preço</label>
+                                </span>
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !servico.preco">Campo
+                                    Obrigatório.</small>
+                            </div>
                         </div>
-                        <div class="field col">
+                        <div class="field" style="padding-top: 15px;">
                             <span class="p-float-label">
-                                <input pInputText id="name" [(ngModel)]="product.name"
-                                    [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                                <label htmlFor="username">Tipo</label>
+                                <textarea id="descricao" pInputTextarea formControlName="descricao"
+                                    [(ngModel)]="servico.descricao" rows="3" cols="20"></textarea>
+                                <label for="descricao">Descrição</label>
                             </span>
-                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo
-                                Obrigatório.</small>
                         </div>
-                        <div class="field col">
-                            <span class="p-float-label">
-                                <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="BRL" locale="pt-BR"
-                                [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" ></p-inputNumber>
-                                <label for="float-input">Valor</label>
-                            </span>
-                            <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Campo
-                                Obrigatório.</small>
-                        </div>
-                    </div>
-                    <div class="field" style="padding-top: 15px;">
-                        <span class="p-float-label">
-                            <textarea id="description" pInputTextarea [(ngModel)]="product.description" required rows="3" cols="20"></textarea>
-                            <label for="float-input">Descrição</label>
-                        </span>
-                    </div>
+                    </form>
                 </ng-template>
                 <ng-template pTemplate="footer">
                     <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
                         (click)="hideDialog()"></button>
                     <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
-                        (click)="saveProduct()"></button>
+                        (click)="saveServico()"></button>
                 </ng-template>
             </p-dialog>
 
-            <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <p-dialog [(visible)]="deleteServicoDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                    <span *ngIf="product">Deseja deletar o cliente: <b>{{product.name}}</b>?</span>
+                    <span *ngIf="servico">Deseja deletar o serviço: <b>{{servico.codigo}}</b>?</span>
                 </div>
                 <ng-template pTemplate="footer">
                     <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"
-                        (click)="deleteProductDialog = false"></button>
+                        (click)="deleteServicoDialog = false"></button>
                     <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Sim"
                         (click)="confirmDelete()"></button>
                 </ng-template>
             </p-dialog>
 
-            <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <p-dialog [(visible)]="deleteServicosDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                    <span>Deseja deletar todos os clientes selecionados?</span>
+                    <span>Deseja deletar todos os serviços selecionados?</span>
                 </div>
                 <ng-template pTemplate="footer">
                     <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"
-                        (click)="deleteProductsDialog = false"></button>
+                        (click)="deleteServicosDialog = false"></button>
                     <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Sim"
                         (click)="confirmDeleteSelected()"></button>
                 </ng-template>

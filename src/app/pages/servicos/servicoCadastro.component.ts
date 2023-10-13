@@ -1,163 +1,248 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
+import { GlobalFilter, Page, Pageable } from 'src/app/models/pageable.interface';
+import { Servico } from 'src/app/models/servico.interface';
+import { ServicoService } from 'src/app/services/servico.service';
 
 @Component({
     templateUrl: './servicoCadastro.component.html',
     providers: [MessageService]
 })
 export class CadastroServicoComponent implements OnInit {
-    productDialog: boolean = false;
+    servicoDialog: boolean = false;
 
-    deleteProductDialog: boolean = false;
+    deleteServicoDialog: boolean = false;
 
-    deleteProductsDialog: boolean = false;
+    deleteServicosDialog: boolean = false;
 
-    products: Product[] = [];
+    servicos: Servico[] | undefined;
 
-    product: Product = {};
+    servico: Servico = {};
 
-    selectedProducts: Product[] = [];
+    selectedServicos: Servico[] = [];
 
     submitted: boolean = false;
-
-    cols: any[] = [];
-
-    statuses: any[] = [];
 
     rowsPerPageOptions = [5, 10, 20];
 
     items: MenuItem[] = [];
 
     home!: MenuItem;
-    
-    isNew: boolean = false;
 
-    titulo: any = 'Novo Cliente';
+    pageable: Pageable = new Pageable();
+
+    formGroup!: FormGroup;
+
+    pageServico!: Page;
+
+    totalRecords: number = 10;
+
+    titulo!: string;
+
+    filter: GlobalFilter = new GlobalFilter();
 
     @BlockUI() blockUI!: NgBlockUI;
-    
-    constructor(private productService: ProductService, private messageService: MessageService) {
-        this.blockUI.start('Carregando...')
-        setTimeout(() => {
-            this.blockUI.stop();
-        }, 1000)
-     }
+
+    constructor(private servicoService: ServicoService, private messageService: MessageService,
+        private formBuilder: FormBuilder) {
+    }
 
     ngOnInit() {
-        this.items = [{ label: 'Serviços' }, { label: 'Tipos de Serviços' }, { label: 'Cadastro de serviços' }];
+        this.buildFormGroup()
+        this.pageServicos(this.pageable, this.filter)
+        this.items = [{ label: 'Serviços' }, { label: 'Tipos de Serviços' }, { label: 'Gerenciamento de serviços' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
+    }
 
-        this.productService.getProducts().then(data => this.products = data);
+    pageServicos(pageable: Pageable, filter: GlobalFilter) {
+        this.blockUI.start('Carregando...')
+        this.servicoService.buscarServicos(pageable, filter)
+            .pipe(
+                catchError(error => {
+                    if (error == 500) {
+                        this.blockUI.stop();
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                if (resp != null) {
+                    this.servicos = resp.content
+                    let total = resp.totalElements;
+                    this.totalRecords = total;
+                }
+                this.blockUI.stop();
+            })
+    }
 
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
-        ];
 
-        this.statuses = [
-            { label: 'EM DIA', value: 'instock' },
-            { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
-        ];
+    buildFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            codigo: ['', Validators.required],
+            tipo: ['', Validators.required],
+            preco: [Validators.required],
+            descricao: [''],
+        });
+    }
+
+    saveServico() {
+        if (this.servico.id) {
+            this.update()
+        } else {
+            this.save()
+        }
+    }
+
+    save() {
+        this.submitted = true;
+        if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
+            this.servicoService.save(this.formGroup.value)
+                .pipe(
+                    catchError(error => {
+                        this.blockUI.stop();
+                        if (error == 400) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Serviço já existe na base de dados.", life: 3000 });
+                        }
+                        if (error == 500) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageServicos(this.pageable, this.filter)
+                })
+        }
+    }
+
+    update() {
+        this.submitted = true;
+        if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
+            this.servicoService.update(this.servico)
+                .pipe(
+                    catchError(error => {
+                        this.blockUI.stop();
+                        if (error == 400) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Produto já existe na base de dados.", life: 3000 });
+                        }
+                        if (error == 500) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.servico = {}
+                    this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageServicos(this.pageable, this.filter)
+                })
+        }
     }
 
     openNew() {
-        this.product = {};
+        this.servico = {};
         this.submitted = false;
-        this.productDialog = true;
-        this.isNew = true;
+        this.servicoDialog = true;
         this.titulo = "Novo Serviço"
     }
 
-    deleteSelectedProducts() {
-        this.deleteProductsDialog = true;
+    deleteSelectedServicos() {
+        this.deleteServicosDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
+    editarServico(servico: Servico) {
+        this.servico = { ...servico };
+        this.servicoDialog = true;
         this.titulo = "Editar Serviço"
     }
 
-    deleteProduct(product: Product) {
-        this.deleteProductDialog = true;
-        this.product = { ...product };
+    deleteServico(servico: Servico) {
+        this.deleteServicoDialog = true;
+        this.servico = { ...servico };
     }
 
     confirmDeleteSelected() {
-        this.deleteProductsDialog = false;
-        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.selectedProducts = [];
+        this.deleteServicosDialog = false;
+        this.servicos = this.selectedServicos
+        const ids = this.servicos.map(servicos => servicos.id)
+        this.servicoService.deleteAll(ids)
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                this.servicos = []
+                this.selectedServicos = [];
+                this.blockUI.stop();
+                this.pageServicos(this.pageable, this.filter)
+            })
     }
 
     confirmDelete() {
-        this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.product = {};
+        this.deleteServicoDialog = false;
+        this.servicoService.delete(this.servico.id)
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                this.servico = {}
+                this.blockUI.stop();
+                this.pageServicos(this.pageable, this.filter)
+            })
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.servicoDialog = false;
         this.submitted = false;
-    }
-
-    saveProduct() {
-        this.submitted = true;
-
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-                this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-            } else {
-                this.product.id = this.createId();
-                this.product.code = this.createId();
-                this.product.image = 'product-placeholder.svg';
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
-                this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-            }
-
-            this.products = [...this.products];
-            this.productDialog = false;
-            this.product = {};
-        }
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    page(event: any) {
+        this.pageable.page = event.first / event.rows;
+        this.pageable.size = event.rows;
+        this.pageable.sort = event.sortField != undefined ? event.sortField : ""
+        this.filter.filter = event.globalFilter
+        this.pageServicos(this.pageable, this.filter)
     }
 
 }
