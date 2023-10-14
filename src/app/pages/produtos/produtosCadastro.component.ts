@@ -4,11 +4,10 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { catchError, of } from 'rxjs';
-import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
 import { GlobalFilter, Page, Pageable } from 'src/app/models/pageable.interface';
 import { Produto } from 'src/app/models/produto.interface';
 import { ProdutoService } from 'src/app/services/produto.service';
+import { CommonUtils } from './../../utils/utils';
 
 @Component({
     templateUrl: './produtosCadastro.component.html',
@@ -129,6 +128,10 @@ export class CadastroProdutosComponent implements OnInit {
             .subscribe(resp => {
                 if (resp != null) {
                     this.produtos = resp.content
+
+                    this.produtos?.map(r => {
+                        r.valorStr = CommonUtils.formatCurrency(Number(r.valor))
+                    })
                     let total = resp.totalElements;
                     this.totalRecords = total;
                 }

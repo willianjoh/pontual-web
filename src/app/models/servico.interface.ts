@@ -3,7 +3,8 @@ export interface Servico {
     codigo?: string;
     tipo?: string;
     descricao?: string;
-    preco?: string;
+    preco?: number;
+    precoStr?: string;
   }
 
   export interface ServicoPage {

@@ -4,5 +4,6 @@ export interface Produto {
     nome?: string;
     modelo?: string;
     valor?: number;
+    valorStr?: string;
     descricao?: string;
   }

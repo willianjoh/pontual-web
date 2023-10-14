@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { format } from 'path';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { catchError, of } from 'rxjs';
@@ -9,6 +10,7 @@ import { ProductService } from 'src/app/demo/service/product.service';
 import { GlobalFilter, Page, Pageable } from 'src/app/models/pageable.interface';
 import { Servico } from 'src/app/models/servico.interface';
 import { ServicoService } from 'src/app/services/servico.service';
+import { CommonUtils } from 'src/app/utils/utils';
 
 @Component({
     templateUrl: './servicoCadastro.component.html',
@@ -75,6 +77,9 @@ export class CadastroServicoComponent implements OnInit {
             .subscribe(resp => {
                 if (resp != null) {
                     this.servicos = resp.content
+                    this.servicos?.map(r => {
+                        r.precoStr = CommonUtils.formatCurrency(Number(r.preco))
+                    })
                     let total = resp.totalElements;
                     this.totalRecords = total;
                 }
@@ -140,7 +145,7 @@ export class CadastroServicoComponent implements OnInit {
                     catchError(error => {
                         this.blockUI.stop();
                         if (error == 400) {
-                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Produto já existe na base de dados.", life: 3000 });
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Serviço já existe na base de dados.", life: 3000 });
                         }
                         if (error == 500) {
                             this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });

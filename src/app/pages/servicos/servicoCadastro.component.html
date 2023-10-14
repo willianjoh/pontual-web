@@ -57,7 +57,7 @@
                         </td>
                         <td style="width:20%; min-width:10rem;">
                             <span class="p-column-title">Preço</span>
-                            {{"R$" + servico.preco}}
+                            {{servico.precoStr}}
                         </td>
                         <td style="width:23%; min-width:10rem;">
                             <span class="p-column-title">Descrição</span>
@@ -101,7 +101,7 @@
                             <div class="field col">
                                 <span class="p-float-label">
                                     <p-inputNumber [(ngModel)]="servico.preco" formControlName="preco" mode="currency"
-                                        currency="BRL" locale="pt-BR"
+                                        currency="BRL" locale="pt-BR" 
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !servico.preco}"></p-inputNumber>
                                     <label>Preço</label>
                                 </span>
