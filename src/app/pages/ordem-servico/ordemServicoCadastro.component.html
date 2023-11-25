@@ -40,7 +40,8 @@
                         <th pSortableColumn="category">Tipo de servico<p-sortIcon field="category"></p-sortIcon></th>
                         <th pSortableColumn="price">Cliente<p-sortIcon field="price"></p-sortIcon></th>
                         <th pSortableColumn="name">Data orçamento<p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="inventoryStatus">Data entrega<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus">Data entrega<p-sortIcon
+                                field="inventoryStatus"></p-sortIcon></th>
                         <th pSortableColumn="price">Status do serviço<p-sortIcon field="price"></p-sortIcon></th>
                         <th></th>
                     </tr>
@@ -85,7 +86,7 @@
                     </tr>
                 </ng-template>
             </p-table>
-            <p-dialog [(visible)]="productDialog" [style]="{ width: '50vw', height: '610px' }" header="{{titulo}}"
+            <p-dialog [(visible)]="productDialog" [style]="{ width: '50vw', height: '640px' }" header="{{titulo}}"
                 [draggable]="true" [resizable]="true" [modal]="true" class="p-fluid">
                 <div class="content">
                     <div class="formgrid grid">
@@ -257,6 +258,15 @@
                             </span>
                             <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Campo
                                 Obrigatório.</small>
+                        </div>
+                    </div>
+                    <div class="formgrid grid">
+                        <div class="field col" style="padding-top: 15px;">
+                            <span class="p-float-label">
+                                <textarea id="descricao" pInputTextarea formControlName="price"
+                                    [(ngModel)]="product.price" rows="5" cols="20"></textarea>
+                                <label for="descricao">Observações</label>
+                            </span>
                         </div>
                     </div>
                 </div>
