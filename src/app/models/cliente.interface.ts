@@ -8,6 +8,18 @@ export interface Cliente {
     fixo?: string;
   }
 
+  export interface ClienteList {
+    id?: number;
+    nome?: string;
+    sobrenome?: string;
+  }
+
+  export interface ClienteOrderService {
+    id?: number;
+    nome?: string;
+    sobrenome?: string;
+  }
+
   export interface ClientePage {
     id?: number;
     nome?: string;

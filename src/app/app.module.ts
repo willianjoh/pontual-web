@@ -38,6 +38,8 @@ import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component
 import { PaginatorModule } from 'primeng/paginator';
 import { FullCalendarModule } from '@fullcalendar/angular';
 
+import { AutoCompleteModule } from 'primeng/autocomplete';
+
 @NgModule({
     declarations: [
         AppComponent, 
@@ -74,6 +76,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
         PaginatorModule,
         ProgressSpinnerModule,
         FullCalendarModule,
+        AutoCompleteModule,
         BlockUIModule.forRoot()
     ],
     providers: [

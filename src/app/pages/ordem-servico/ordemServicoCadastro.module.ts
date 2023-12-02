@@ -16,6 +16,7 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { BlockUIModule } from 'ng-block-ui';
 import { OrdemServicoCadastroRoutingModule } from './ordemServicoCadastro-routing.module';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import { OrdemServicoCadastroRoutingModule } from './ordemServicoCadastro-routin
         RadioButtonModule,
         InputNumberModule,
         DialogModule,
+        AutoCompleteModule,
         BlockUIModule.forRoot(),
     ],
     declarations: []

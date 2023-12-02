@@ -55,8 +55,8 @@ export class CadastroClientesComponent implements OnInit {
 
     ngOnInit() {
         this.buildFormGroup()
-        this.pageClientes(this.pageable, this.filter)
         this.breadcrumb()
+        this.pageClientes(this.pageable, this.filter)
         this.cols = [
             { field: 'nome', header: 'Nome' },
             { field: 'sobrenome', header: 'Sobrenome' },

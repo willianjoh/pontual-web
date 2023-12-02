@@ -1,5 +1,5 @@
 .customer-badge,
-.product-badge,
+.system-badge,
 .order-badge {
     border-radius: var(--border-radius);
     padding: .25em .5rem;
@@ -9,10 +9,35 @@
     letter-spacing: .3px;
 }
 
-.product-badge {
+.system-badge {
     &.status-instock {
         background: #C8E6C9;
         color: #256029;
+    }
+
+    &.statusPagamento-1 {
+        background: #c9cc29;
+        color: #070707;
+    }
+
+    &.statusPagamento-2 {
+        background: #0c9e16;
+        color: #070707;
+    }
+
+    &.statusOrderService-1 {
+        background: #c9cc29;
+        color: #070707;
+    }
+
+    &.statusOrderService-2 {
+        background: #1737c7;
+        color: #070707;
+    }
+
+    &.statusOrderService-3 {
+        background: #0c9e16;
+        color: #070707;
     }
 
     &.status-outofstock {

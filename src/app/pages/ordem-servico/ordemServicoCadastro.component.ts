@@ -1,41 +1,63 @@
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ClienteList } from './../../models/cliente.interface';
+import { ClienteService } from './../../services/cliente.service';
 import { Component, OnInit } from '@angular/core';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
+import { OrdemServicoService } from 'src/app/services/ordemServico.service';
+import { OrdemServico } from 'src/app/models/ordemServico.interface';
+
+interface AutoCompleteCompleteEvent {
+    originalEvent: Event;
+    query: string;
+}
 
 @Component({
     templateUrl: './ordemServicoCadastro.component.html',
     providers: [MessageService]
 })
 export class OrdemServicoProdutosComponent implements OnInit {
-    productDialog: boolean = false;
 
-    deleteProductDialog: boolean = false;
+    formGroup!: FormGroup;
 
-    deleteProductsDialog: boolean = false;
+    ordemServicoDialog: boolean = false;
 
-    products: Product[] = [];
+    deleteOrdemServicoDialog: boolean = false;
 
-    product: Product = {};
+    deleteOrdemServicosDialog: boolean = false;
 
-    selectedProducts: Product[] = [];
+    ordemServicos: Product[] = [];
+
+    ordemServico: OrdemServico = {};
+
+    selectedOrdemServicos: Product[] = [];
 
     submitted: boolean = false;
 
     cols: any[] = [];
 
-    statuses: any[] = [];
+    statusServico: any[] = [];
+
+    statusPagamento: any[] = [];
+
+    formaPagamento: any[] = [];
 
     rowsPerPageOptions = [5, 10, 20];
 
     items: MenuItem[] = [];
 
-    parcelas: any [] = [];
+    parcelas: any[] = [];
+
+    clientes: ClienteList[] = [];
+
+    filteredClientes: ClienteList[] = [];
 
     home!: MenuItem;
-    
+
     isNew: boolean = false;
 
     titulo: string = 'Novo Cliente';
@@ -43,31 +65,27 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     @BlockUI() blockUI!: NgBlockUI;
 
-    constructor(private productService: ProductService, private messageService: MessageService) {
-        this.blockUI.start('Carregando...')
-        setTimeout(() => {
-            this.blockUI.stop();
-        }, 1000)
-     }
-
-    ngOnInit() {
-        this.items = [{ label: 'Ordem de Serviço' }, { label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
-        this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
-        this.showSpinner= true
-        this.productService.getProducts().then(data => this.products = data);
-
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
+    constructor(private productService: ProductService,
+        private ordemSerivicoService: OrdemServicoService,
+        private clienteService: ClienteService,
+        private messageService: MessageService,
+        private formBuilder: FormBuilder) {
+        this.statusServico = [
+            { code: "1", label: 'EM ANDAMENTO', value: 'emAndamento' },
+            { code: "2", label: 'DISPONÍVEL PARA RETIRADA', value: 'disponivel' },
+            { code: "3", label: 'ENTREGUE', value: 'entregue' }
         ];
 
-        this.statuses = [
-            { label: 'EM DIA', value: 'instock' },
-            { label: 'PAGAMENTO PENDENTE', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
+        this.statusPagamento = [
+            { code: "1", label: 'PAGAMENTO PENDENTE', value: 'pendente' },
+            { code: "2", label: 'PAGAMENTO REALIZADO', value: 'realizado' },
+        ];
+
+        this.formaPagamento = [
+            { code: 1, label: 'Dinheiro' },
+            { code: 2, label: 'Débito' },
+            { code: 3, label: 'Crédito' },
+            { code: 4, label: 'Pix' },
         ];
 
         this.parcelas = [
@@ -84,97 +102,103 @@ export class OrdemServicoProdutosComponent implements OnInit {
             { label: '11x', value: '11' },
             { label: '12x', value: '12' },
         ];
-        this.showSpinner= false
+    }
+
+    ngOnInit() {
+        this.buildFormGroup()
+        this.items = [{ label: 'Ordem de Serviço' }, { label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
+        this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
+        this.getCLientes();
+        this.showSpinner = false
+    }
+
+    buildFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            tipoServico: ['', Validators.required],
+            codigo: ['', Validators.required],
+            dataOrcamento: ['', Validators.required],
+            dataEntrega: [''],
+            cliente: [null, Validators.required],
+            valorServico: ['', Validators.required],
+            status: ['', Validators.required],
+            statusPagamento: ['', Validators.required],
+            formaPagamento: ['', Validators.required],
+            qtdParcelas: [''],
+            valorParcela: [''],
+            observacao: ['']
+        });
+    }
+
+    getCLientes() {
+        this.blockUI.start('Carregando...')
+        this.clienteService.getAllClientes()
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            ).subscribe(resp => {
+                this.clientes = resp;
+                this.clientes?.map(r => {
+                    r.nome = r.nome?.concat(" " + r.sobrenome)
+                })
+                this.blockUI.stop();
+            });
+    }
+
+    filterClientes(event: AutoCompleteCompleteEvent) {
+        let filtered: any[] = [];
+        let query = event.query;
+
+        for (let i = 0; i < (this.clientes as any[]).length; i++) {
+            let cliente = (this.clientes as any[])[i];
+            if (cliente.nome.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+                filtered.push(cliente);
+            }
+        }
+
+        this.filteredClientes = filtered;
     }
 
     openNew() {
-        this.product = {};
         this.submitted = false;
-        this.productDialog = true;
+        this.ordemServicoDialog = true;
         this.isNew = true;
         this.titulo = "Ordem de serviço"
     }
 
-    deleteSelectedProducts() {
-        this.deleteProductsDialog = true;
+    deleteSelectedOrdemServicos() {
+        this.deleteOrdemServicosDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
+    editOrdemServico(product: Product) {
+        this.ordemServicoDialog = true;
         this.titulo = "Editar ordem de serviço"
     }
 
-    deleteProduct(product: Product) {
-        this.deleteProductDialog = true;
-        this.product = { ...product };
+    deleteOrdemServico(product: Product) {
+        this.deleteOrdemServicoDialog = true;
     }
 
     confirmDeleteSelected() {
-        this.deleteProductsDialog = false;
-        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.selectedProducts = [];
+        this.deleteOrdemServicosDialog = false;
     }
 
     confirmDelete() {
-        this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.product = {};
+        this.deleteOrdemServicosDialog = false;
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.ordemServicoDialog = false;
         this.submitted = false;
     }
 
-    saveProduct() {
+    saveOrdemServico() {
         this.submitted = true;
 
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-                this.blockUI.start('Carregando...')
-                this.products[this.findIndexById(this.product.id)] = this.product;
-                this.blockUI.stop();
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-            } else {
-                this.product.id = this.createId();
-                this.product.code = this.createId();
-                this.product.image = 'product-placeholder.svg';
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
-                this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-            }
-
-            this.products = [...this.products];
-            this.productDialog = false;
-            this.product = {};
-        }
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
     onGlobalFilter(table: Table, event: Event) {
