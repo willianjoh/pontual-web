@@ -1,4 +1,5 @@
-import { ClienteOrderService } from "./cliente.interface";
+import { Cliente, ClienteOrderService } from "./cliente.interface";
+import { Servico } from "./servico.interface";
 import { StatusPagamento } from "./statusPagmento.interface";
 import { StatusServico } from "./statusServico.interface";
 
@@ -8,10 +9,11 @@ export interface OrdemServico {
     codigo?: string;
     dataOrcamento?: string;
     dataEntrega?: string;
-    cliente?: ClienteOrderService;
+    cliente?: Cliente;
+    servico?: Servico;
     valor?: string;
-    statusServico?: StatusServico;
-    statusPagamento?: StatusPagamento;
+    statusServico?: string;
+    statusPagamento?: string;
     formaPagamento?: string;
     qtdParcelas?: string;
     valorParcela?: string;

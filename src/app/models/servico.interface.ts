@@ -1,4 +1,4 @@
-export interface Servico {
+  export interface Servico {
     id?: number;
     codigo?: string;
     tipo?: string;
@@ -13,4 +13,10 @@ export interface Servico {
     tipo?: string;
     descricao?: string;
     preco?: string;
+  }
+
+  export interface ServicoList {
+    id?: number;
+    codigo?: string;
+    tipo?: string;
   }

@@ -1,4 +1,4 @@
 export interface StatusServico {
-    code?: string;
     label?: string;
+    value?: string;
 }

@@ -1,9 +1,8 @@
-import { map } from 'rxjs/operators';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { Cliente } from '../models/cliente.interface';
 import { Observable, catchError, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { OrdemServico } from '../models/ordemServico.interface';
 import { GlobalFilter, Page, Pageable } from '../models/pageable.interface';
 
 @Injectable({
@@ -14,15 +13,15 @@ export class OrdemServicoService {
 
   constructor(private http: HttpClient) { }
 
-  save(cliente: Cliente): Observable<Cliente> {
-    return this.http.post<Cliente>(this.apiURL, cliente)
+  save(ordemServico: OrdemServico): Observable<OrdemServico> {
+    return this.http.post<OrdemServico>(this.apiURL, ordemServico)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  update(cliente: Cliente): Observable<Cliente> {
-    return this.http.put<Cliente>(this.apiURL, cliente)
+  update(ordemServico: OrdemServico): Observable<OrdemServico> {
+    return this.http.put<OrdemServico>(this.apiURL, ordemServico)
       .pipe(
         catchError(this.handleError)
       );
@@ -50,8 +49,8 @@ export class OrdemServicoService {
       );
   }
 
-  buscarTodosClientes(): Observable<Cliente []> {
-    return this.http.get<Cliente []>(`${this.apiURL}/todos`)
+  buscarTodosClientes(): Observable<OrdemServico []> {
+    return this.http.get<OrdemServico []>(`${this.apiURL}/todos`)
       .pipe(
         catchError(this.handleError)
       );

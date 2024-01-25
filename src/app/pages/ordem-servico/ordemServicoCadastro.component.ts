@@ -10,6 +10,9 @@ import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 import { OrdemServicoService } from 'src/app/services/ordemServico.service';
 import { OrdemServico } from 'src/app/models/ordemServico.interface';
+import { ServicoService } from 'src/app/services/servico.service';
+import { ServicoCadastroModule } from '../servicos/servicoCadastro.module';
+import { ServicoList } from 'src/app/models/servico.interface';
 
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
@@ -56,7 +59,13 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     filteredClientes: ClienteList[] = [];
 
+    servicos: ServicoList[] = []
+
+    filteredservicos: ServicoList[] = []
+
     home!: MenuItem;
+
+    habilitaParcelas: boolean = true;
 
     isNew: boolean = false;
 
@@ -68,17 +77,19 @@ export class OrdemServicoProdutosComponent implements OnInit {
     constructor(private productService: ProductService,
         private ordemSerivicoService: OrdemServicoService,
         private clienteService: ClienteService,
+        private servicoService: ServicoService,
         private messageService: MessageService,
         private formBuilder: FormBuilder) {
         this.statusServico = [
-            { code: "1", label: 'EM ANDAMENTO', value: 'emAndamento' },
-            { code: "2", label: 'DISPONÍVEL PARA RETIRADA', value: 'disponivel' },
-            { code: "3", label: 'ENTREGUE', value: 'entregue' }
+            { label: "INICIADO", value: "iniciado" },
+            { label: "PENDENTE", value: "pendente" },
+            { label: "CANCELADO", value: "cancelado" },
+            { label: "FINALIZADO", value: "finalizado" }
         ];
 
         this.statusPagamento = [
-            { code: "1", label: 'PAGAMENTO PENDENTE', value: 'pendente' },
-            { code: "2", label: 'PAGAMENTO REALIZADO', value: 'realizado' },
+            { label: "PENDENTE", value: "pendente" },
+            { label: "PAGO", value: "pago" },
         ];
 
         this.formaPagamento = [
@@ -109,7 +120,10 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.items = [{ label: 'Ordem de Serviço' }, { label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
         this.getCLientes();
-        this.showSpinner = false
+        this.getServicos();
+        this.ordemServico.statusServico = "INICIADO"
+        this.ordemServico.statusPagamento = "PENDENTE"
+        this.ordemServico.formaPagamento = "Dinheiro"
     }
 
     buildFormGroup() {
@@ -122,9 +136,9 @@ export class OrdemServicoProdutosComponent implements OnInit {
             valorServico: ['', Validators.required],
             status: ['', Validators.required],
             statusPagamento: ['', Validators.required],
-            formaPagamento: ['', Validators.required],
-            qtdParcelas: [''],
-            valorParcela: [''],
+            formaPagamento: [, Validators.required],
+            qtdParcelas: [{ value: '', disabled: true }],
+            valorParcela: [{ value: '', disabled: true }],
             observacao: ['']
         });
     }
@@ -149,6 +163,23 @@ export class OrdemServicoProdutosComponent implements OnInit {
             });
     }
 
+    getServicos() {
+        this.blockUI.start('Carregando...')
+        this.servicoService.getAllServicos()
+            .pipe(
+                catchError(error => {
+                    this.blockUI.stop();
+                    if (error == 500 || error == 400) {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            ).subscribe(resp => {
+                this.servicos = resp;
+                this.blockUI.stop();
+            });
+    }
+
     filterClientes(event: AutoCompleteCompleteEvent) {
         let filtered: any[] = [];
         let query = event.query;
@@ -163,10 +194,66 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.filteredClientes = filtered;
     }
 
+    filterServicos(event: AutoCompleteCompleteEvent) {
+        let filtered: any[] = [];
+        let query = event.query;
+
+        for (let i = 0; i < (this.servicos as any[]).length; i++) {
+            let servico = (this.servicos as any[])[i];
+            if (servico.tipo.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+                filtered.push(servico);
+            }
+        }
+
+        this.filteredservicos = filtered;
+    }
+
+    selecionaFormaDePagamento(event: any) {
+        console.log(event.value)
+        if (event.value === "Crédito") {
+            this.formGroup.get('qtdParcelas')?.setValidators(Validators.required)
+            this.formGroup.get('valorParcela')?.setValidators(Validators.required)
+            this.formGroup.get('qtdParcelas')?.enable()
+            this.formGroup.get('valorParcela')?.enable()
+
+        } else {
+            this.formGroup.get('qtdParcelas')?.clearValidators()
+            this.formGroup.get('valorParcela')?.clearValidators()
+            this.formGroup.get('qtdParcelas')?.reset()
+            this.formGroup.get('valorParcela')?.reset()
+            this.formGroup.get('qtdParcelas')?.disable()
+            this.formGroup.get('valorParcela')?.disable()
+        }
+
+    }
+
+    calculaValorParcelasPorValor(event: any) {
+        console.log(event)
+        let formaPagamento = this.formGroup.get('formaPagamento')?.value;
+        let qtdParcelas = Number(this.formGroup.get('qtdParcelas')?.value);
+        let valor = Number(event)
+        if (formaPagamento === "Crédito" && qtdParcelas && valor) {
+            if (valor != undefined && valor != null) {
+                this.formGroup.get('valorParcela')?.setValue(valor / qtdParcelas);
+            }
+        }
+    }
+
+    calculaValorParcelas(event: any) {
+        let valor = Number(this.formGroup.get('valorServico')?.value);
+        let formaPagamento = this.formGroup.get('formaPagamento')?.value;
+        if (formaPagamento === "Crédito" && event.value != null && valor) {
+            this.formGroup.get('valorParcela')?.setValue(valor / event.value);
+        }
+    }
+
     openNew() {
         this.submitted = false;
         this.ordemServicoDialog = true;
         this.isNew = true;
+        this.ordemServico.statusServico = "INICIADO"
+        this.ordemServico.statusPagamento = "PENDENTE"
+        this.ordemServico.formaPagamento = "Dinheiro"
         this.titulo = "Ordem de serviço"
     }
 
@@ -194,11 +281,12 @@ export class OrdemServicoProdutosComponent implements OnInit {
     hideDialog() {
         this.ordemServicoDialog = false;
         this.submitted = false;
+        this.formGroup.reset()
     }
 
     saveOrdemServico() {
         this.submitted = true;
-
+        console.log(this.formGroup.value)
     }
 
     onGlobalFilter(table: Table, event: Event) {

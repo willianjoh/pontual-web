@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GlobalFilter, Page, Pageable } from '../models/pageable.interface';
-import { Servico } from '../models/servico.interface';
+import { Servico, ServicoList } from '../models/servico.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +44,13 @@ export class ServicoService {
   buscarServicos(pageable: Pageable, filter: GlobalFilter): Observable<Page> {
     const options = {params: Object.assign(pageable)};
     return this.http.post<Page>(`${this.apiURL}/listarTodos`, filter, options)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getAllServicos(): Observable<ServicoList[]> {
+    return this.http.get<ServicoList[]>(`${this.apiURL}/listarTodos`)
       .pipe(
         catchError(this.handleError)
       );

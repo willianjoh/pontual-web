@@ -15,34 +15,34 @@
         color: #256029;
     }
 
-    &.statusPagamento-1 {
+    &.statusPagamento-pendente {
         background: #c9cc29;
         color: #070707;
     }
 
-    &.statusPagamento-2 {
+    &.statusPagamento-pago {
         background: #0c9e16;
         color: #070707;
     }
 
-    &.statusOrderService-1 {
+    &.statusOrderService-pendente {
         background: #c9cc29;
         color: #070707;
     }
 
-    &.statusOrderService-2 {
+    &.statusOrderService-iniciado {
         background: #1737c7;
         color: #070707;
     }
 
-    &.statusOrderService-3 {
+    &.statusOrderService-finalizado {
         background: #0c9e16;
         color: #070707;
     }
 
-    &.status-outofstock {
-        background: #FFCDD2;
-        color: #C63737;
+    &.statusOrderService-cancelado {
+        background: #C63737;
+        color: #070707;
     }
 
     &.status-lowstock {

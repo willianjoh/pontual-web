@@ -86,26 +86,19 @@
                     </tr>
                 </ng-template>
             </p-table>
-            <p-dialog [(visible)]="ordemServicoDialog" [style]="{ width: '55vw', height: '655px' }" header="{{titulo}}"
+            <p-dialog [(visible)]="ordemServicoDialog" [style]="{ width: '55vw', height: '710px' }" header="{{titulo}}"
                 [draggable]="true" [resizable]="true" [modal]="true" class="p-fluid">
                 <ng-template pTemplate="content">
                     <form [formGroup]="formGroup">
                         <div class="formgrid grid">
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <p-dropdown [(ngModel)]="ordemServico.statusServico" formControlName="tipoServico"
+                                    <p-autoComplete
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.tipoServico}"
-                                        inputId="tipoServicoId" optionValue="label" [options]="statusServico"
-                                        placeholder="Selecione">
-                                        <ng-template pTemplate="selectedItem">
-                                            <span
-                                                *ngIf="ordemServico && ordemServico.tipoServico">{{ordemServico.tipoServico}}</span>
-                                        </ng-template>
-                                        <ng-template let-option pTemplate="item">
-                                            <span>{{option.label}}</span>
-                                        </ng-template>
-                                    </p-dropdown>
-                                    <label for="tipoServicoId">Tipo de serviço</label>
+                                        formControlName="tipoServico" [suggestions]="filteredservicos"
+                                        [(ngModel)]="ordemServico.tipoServico" [dropdown]="true" inputId="tipoServicoId"
+                                        (completeMethod)="filterServicos($event)" field="tipo"></p-autoComplete>
+                                    <label for="tipoServicoId">Servico</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.tipoServico">Campo
                                     Obrigatório.</small>
@@ -162,63 +155,8 @@
                             </div>
                             <div class="field col-5" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <p-inputNumber [(ngModel)]="ordemServico.valor" mode="currency" currency="BRL"
-                                        locale="pt-BR" formControlName="valorServico" inputId="valorServicoId"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.valor}"></p-inputNumber>
-                                    <label for="valorServicoId">Valor do serviço</label>
-                                </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.valor">Campo
-                                    Obrigatório.</small>
-                            </div>
-                        </div>
-                        <div class="formgrid grid">
-                            <div class="field col-6" style="padding-top: 15px;">
-                                <span class="p-float-label">
-                                    <p-dropdown [(ngModel)]="ordemServico.statusServico" formControlName="status"
-                                        inputId="statusId"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.statusServico}"
-                                        optionValue="label" [options]="statusServico" placeholder="Selecione">
-                                        <ng-template pTemplate="selectedItem">
-                                            <span *ngIf="ordemServico && ordemServico.statusServico"
-                                                [class]="'system-badge statusOrderService-' + ordemServico.statusServico.code">{{ordemServico.statusServico}}</span>
-                                        </ng-template>
-                                        <ng-template let-option pTemplate="item">
-                                            <span
-                                                [class]="'system-badge statusOrderService-' + option.code">{{option.label}}</span>
-                                        </ng-template>
-                                    </p-dropdown>
-                                    <label for="statusId">Status do serviço</label>
-                                </span>
-                                <small class="ng-dirty ng-invalid"
-                                    *ngIf="submitted && !ordemServico.statusServico">Campo Obrigatório.</small>
-                            </div>
-                            <div class="field col-6" style="padding-top: 15px;">
-                                <span class="p-float-label">
-                                    <p-dropdown [(ngModel)]="ordemServico.statusPagamento"
-                                        formControlName="statusPagamento" optionValue="label"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.statusPagamento}"
-                                        inputId="statusPagamentoId"[options]="statusPagamento"
-                                        placeholder="Selecione">
-                                        <ng-template pTemplate="selectedItem">
-                                            <span *ngIf="ordemServico && ordemServico.statusServico"
-                                                [class]="'system-badge statusPagamento-' + ordemServico.statusPagamento?.code">{{ordemServico.statusPagamento}}</span>
-                                        </ng-template>
-                                        <ng-template let-option pTemplate="item">
-                                            <span
-                                                [class]="'system-badge statusPagamento-' + option.code">{{option.label}}</span>
-                                        </ng-template>
-                                    </p-dropdown>
-                                    <label for="statusPagamentoId">Status do pagamento</label>
-                                </span>
-                                <small class="ng-dirty ng-invalid"
-                                    *ngIf="submitted && !ordemServico.statusPagamento">Campo Obrigatório.</small>
-                            </div>
-                        </div>
-                        <div class="formgrid grid">
-                            <div class="field col" style="padding-top: 15px;">
-                                <span class="p-float-label">
                                     <p-dropdown [(ngModel)]="ordemServico.formaPagamento"
-                                        formControlName="formaPagamento"
+                                        formControlName="formaPagamento" (onChange)="selecionaFormaDePagamento($event)"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.formaPagamento}"
                                         inputId="formaPagamentoId" optionValue="label" [options]="formaPagamento"
                                         placeholder="Selecione">
@@ -232,15 +170,71 @@
                                     </p-dropdown>
                                     <label for="formaPagamentoId">Forma de pagamento</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.formaPagamento">Campo
+                                <small class="ng-dirty ng-invalid"
+                                    *ngIf="submitted && !ordemServico.formaPagamento">Campo
+                                    Obrigatório.</small>
+                            </div>
+                        </div>
+                        <div class="formgrid grid">
+                            <div class="field col-6" style="padding-top: 15px;">
+                                <span class="p-float-label">
+                                    <p-dropdown [(ngModel)]="ordemServico.statusServico" formControlName="status"
+                                        inputId="statusId"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.statusServico}"
+                                        optionValue="label" [options]="statusServico" placeholder="Selecione">
+                                        <ng-template pTemplate="selectedItem">
+                                            <span *ngIf="ordemServico && ordemServico.statusServico"
+                                                [class]="'system-badge statusOrderService-' + ordemServico.statusServico.toString().toLowerCase()">{{ordemServico.statusServico}}</span>
+                                        </ng-template>
+                                        <ng-template let-option pTemplate="item">
+                                            <span
+                                                [class]="'system-badge statusOrderService-' + option.value.toString().toLowerCase()">{{option.label}}</span>
+                                        </ng-template>
+                                    </p-dropdown>
+                                    <label for="statusId">Status do serviço</label>
+                                </span>
+                                <small class="ng-dirty ng-invalid"
+                                    *ngIf="submitted && !ordemServico.statusServico">Campo Obrigatório.</small>
+                            </div>
+                            <div class="field col-6" style="padding-top: 15px;">
+                                <span class="p-float-label">
+                                    <p-dropdown [(ngModel)]="ordemServico.statusPagamento"
+                                        formControlName="statusPagamento" optionValue="label"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.statusPagamento}"
+                                        inputId="statusPagamentoId" [options]="statusPagamento" placeholder="Selecione">
+                                        <ng-template pTemplate="selectedItem">
+                                            <span *ngIf="ordemServico && ordemServico.statusPagamento"
+                                                [class]="'system-badge statusPagamento-' + ordemServico.statusPagamento.toString().toLowerCase()">{{ordemServico.statusPagamento}}</span>
+                                        </ng-template>
+                                        <ng-template let-option pTemplate="item">
+                                            <span
+                                                [class]="'system-badge statusPagamento-' + option.value.toString().toLowerCase()">{{option.label}}</span>
+                                        </ng-template>
+                                    </p-dropdown>
+                                    <label for="statusPagamentoId">Status do pagamento</label>
+                                </span>
+                                <small class="ng-dirty ng-invalid"
+                                    *ngIf="submitted && !ordemServico.statusPagamento">Campo Obrigatório.</small>
+                            </div>
+                        </div>
+                        <div class="formgrid grid">
+                            <div class="field col-5" style="padding-top: 15px;">
+                                <span class="p-float-label">
+                                    <p-inputNumber [(ngModel)]="ordemServico.valor" mode="currency" currency="BRL"
+                                        locale="pt-BR" formControlName="valorServico" inputId="valorServicoId"
+                                        (ngModelChange)="calculaValorParcelasPorValor($event)"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.valor}"></p-inputNumber>
+                                    <label for="valorServicoId">Valor do serviço</label>
+                                </span>
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.valor">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col" style="padding-top: 15px;">
                                 <span class="p-float-label">
                                     <p-dropdown [(ngModel)]="ordemServico.qtdParcelas" formControlName="qtdParcelas"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.qtdParcelas}"
-                                        optionValue="label" [options]="parcelas" inputId="qtdParcelasId"
-                                        placeholder="Selecione">
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' &&  !ordemServico.qtdParcelas}"
+                                        optionValue="value" [options]="parcelas" inputId="qtdParcelasId"
+                                        (onChange)="calculaValorParcelas($event)" placeholder="Selecione">
                                         <ng-template pTemplate="selectedItem">
                                             <span
                                                 *ngIf="ordemServico && ordemServico.qtdParcelas">{{ordemServico.qtdParcelas}}</span>
@@ -251,17 +245,19 @@
                                     </p-dropdown>
                                     <label for="qtdParcelasId">Parcelas</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.qtdParcelas">Campo
+                                <small class="ng-dirty ng-invalid"
+                                    *ngIf="submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' &&  !ordemServico.qtdParcelas">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col" style="padding-top: 15px;">
                                 <span class="p-float-label">
                                     <p-inputNumber inputId="valorParcelaId" [(ngModel)]="ordemServico.valorParcela"
                                         mode="currency" currency="BRL" locale="pt-BR" formControlName="valorParcela"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.valorParcela}"></p-inputNumber>
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' && !ordemServico.valorParcela}"></p-inputNumber>
                                     <label for="valorParcelaId">Valor da parcela</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.valorParcela">Campo
+                                <small class="ng-dirty ng-invalid"
+                                    *ngIf="submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' && !ordemServico.valorParcela">Campo
                                     Obrigatório.</small>
                             </div>
                         </div>
@@ -269,7 +265,7 @@
                             <div class="field col" style="padding-top: 15px;">
                                 <span class="p-float-label">
                                     <textarea id="observacao" pInputTextarea formControlName="observacao"
-                                        [(ngModel)]="ordemServico.observacao" rows="5" cols="20"></textarea>
+                                        [(ngModel)]="ordemServico.observacao" rows="7" cols="20"></textarea>
                                     <label for="observacao">Observações</label>
                                 </span>
                             </div>
