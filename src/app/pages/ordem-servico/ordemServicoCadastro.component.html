@@ -16,7 +16,7 @@
                     </div>
                 </ng-template>
             </p-toolbar>
-            <p-table #dt [value]="ordemServicos" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+            <p-table #dt [value]="ordemServicos!" [columns]="cols" responsiveLayout="scroll" [rows]="10"
                 [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
                 [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
@@ -52,27 +52,27 @@
                             <p-tableCheckbox [value]="ordemServico"></p-tableCheckbox>
                         </td>
                         <td style="width:15%; min-width:10rem;"><span class="p-column-title">Código identificador</span>
-                            {{ordemServico.code || ordemServico.id}}
+                            {{ordemServico.id || ordemServico.codigo}}
                         </td>
                         <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Tipo de servico</span>
-                            {{ordemServico.name}}
+                            {{ordemServico.tipoServico.tipo}}
                         </td>
                         <td style="width:17%; min-width:10rem;">
                             <span class="p-column-title">Cliente</span>
-                            {{ordemServico.name}}
+                            {{ordemServico.cliente.nome + " " + ordemServico.cliente.sobrenome}}
                         </td>
                         <td style="width:15%; min-width:10rem;">
                             <span class="p-column-title">Data orçamento</span>
-                            {{ordemServico.category}}
+                            {{ordemServico.dataOrcamento}}
                         </td>
                         <td style="width:15%; min-width:10rem;">
                             <span class="p-column-title">Data entrega</span>
-                            {{ordemServico.category}}
+                            {{ordemServico.dataEntrega}}
                         </td>
                         <td style="width:17%; min-width: 10rem;"><span class="p-column-title">Status do serviço</span>
                             <span
-                                [class]="'ordemServico-badge status-' + (ordemServico.statusServico ? ordemServico.statusServico.toLowerCase() : '')">{{ordemServico.statusServico}}</span>
+                                [class]="'system-badge statusOrderService-' + (ordemServico.status ? ordemServico.status.toLowerCase() : '')">{{ordemServico.status}}</span>
                         </td>
                         <td>
                             <div class="flex">
@@ -94,13 +94,13 @@
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">
                                     <p-autoComplete
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.tipoServico}"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.servico}"
                                         formControlName="tipoServico" [suggestions]="filteredservicos"
-                                        [(ngModel)]="ordemServico.tipoServico" [dropdown]="true" inputId="tipoServicoId"
+                                        [(ngModel)]="ordemServico.servico" [dropdown]="true" inputId="tipoServicoId"
                                         (completeMethod)="filterServicos($event)" field="tipo"></p-autoComplete>
                                     <label for="tipoServicoId">Servico</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.tipoServico">Campo
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.servico">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col-6" style="padding-top: 15px;">
@@ -178,13 +178,13 @@
                         <div class="formgrid grid">
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <p-dropdown [(ngModel)]="ordemServico.statusServico" formControlName="status"
+                                    <p-dropdown [(ngModel)]="ordemServico.status" formControlName="status"
                                         inputId="statusId"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.statusServico}"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.status}"
                                         optionValue="label" [options]="statusServico" placeholder="Selecione">
                                         <ng-template pTemplate="selectedItem">
-                                            <span *ngIf="ordemServico && ordemServico.statusServico"
-                                                [class]="'system-badge statusOrderService-' + ordemServico.statusServico.toString().toLowerCase()">{{ordemServico.statusServico}}</span>
+                                            <span *ngIf="ordemServico && ordemServico.status"
+                                                [class]="'system-badge statusOrderService-' + ordemServico.status.toString().toLowerCase()">{{ordemServico.status}}</span>
                                         </ng-template>
                                         <ng-template let-option pTemplate="item">
                                             <span
@@ -194,7 +194,7 @@
                                     <label for="statusId">Status do serviço</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
-                                    *ngIf="submitted && !ordemServico.statusServico">Campo Obrigatório.</small>
+                                    *ngIf="submitted && !ordemServico.status">Campo Obrigatório.</small>
                             </div>
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">

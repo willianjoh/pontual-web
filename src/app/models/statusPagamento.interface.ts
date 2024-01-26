@@ -1,4 +1,4 @@
 export interface StatusPagamento {
     label?: string;
-    value?: string;
+    code?: number;
 }

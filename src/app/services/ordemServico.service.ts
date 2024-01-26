@@ -41,7 +41,7 @@ export class OrdemServicoService {
       );
   }
 
-  buscarClientes(pageable: Pageable, filter: GlobalFilter): Observable<Page> {
+  buscarOrdemServicos(pageable: Pageable, filter: GlobalFilter): Observable<Page> {
     const options = {params: Object.assign(pageable)};
     return this.http.post<Page>(`${this.apiURL}/listarTodos`, filter, options)
       .pipe(
@@ -49,7 +49,7 @@ export class OrdemServicoService {
       );
   }
 
-  buscarTodosClientes(): Observable<OrdemServico []> {
+  buscarTodasOrdemServicos(): Observable<OrdemServico []> {
     return this.http.get<OrdemServico []>(`${this.apiURL}/todos`)
       .pipe(
         catchError(this.handleError)

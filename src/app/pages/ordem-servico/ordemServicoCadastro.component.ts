@@ -9,10 +9,11 @@ import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
 import { ProductService } from 'src/app/demo/service/product.service';
 import { OrdemServicoService } from 'src/app/services/ordemServico.service';
-import { OrdemServico } from 'src/app/models/ordemServico.interface';
+import { OrdemServico, OrdemServicoPage } from 'src/app/models/ordemServico.interface';
 import { ServicoService } from 'src/app/services/servico.service';
 import { ServicoCadastroModule } from '../servicos/servicoCadastro.module';
 import { ServicoList } from 'src/app/models/servico.interface';
+import { GlobalFilter, Pageable } from 'src/app/models/pageable.interface';
 
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
@@ -33,7 +34,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     deleteOrdemServicosDialog: boolean = false;
 
-    ordemServicos: Product[] = [];
+    ordemServicos: OrdemServicoPage[] | undefined;
 
     ordemServico: OrdemServico = {};
 
@@ -69,13 +70,19 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     isNew: boolean = false;
 
-    titulo: string = 'Novo Cliente';
+    pageable: Pageable = new Pageable();
+
+    filter: GlobalFilter = new GlobalFilter();
+
+    titulo: string = "Ordem de serviço";
+
     showSpinner = false
 
     @BlockUI() blockUI!: NgBlockUI;
+    totalRecords: number = 10;
 
-    constructor(private productService: ProductService,
-        private ordemSerivicoService: OrdemServicoService,
+    constructor(
+        private ordemServicoService: OrdemServicoService,
         private clienteService: ClienteService,
         private servicoService: ServicoService,
         private messageService: MessageService,
@@ -119,9 +126,8 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.buildFormGroup()
         this.items = [{ label: 'Ordem de Serviço' }, { label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
-        this.getCLientes();
-        this.getServicos();
-        this.ordemServico.statusServico = "INICIADO"
+        this.pageOrdemServicos(this.pageable, this.filter)
+        this.ordemServico.status = "INICIADO"
         this.ordemServico.statusPagamento = "PENDENTE"
         this.ordemServico.formaPagamento = "Dinheiro"
     }
@@ -139,7 +145,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
             formaPagamento: [, Validators.required],
             qtdParcelas: [{ value: '', disabled: true }],
             valorParcela: [{ value: '', disabled: true }],
-            observacao: ['']
+            observacao: [{ value: null }]
         });
     }
 
@@ -209,7 +215,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
     }
 
     selecionaFormaDePagamento(event: any) {
-        console.log(event.value)
         if (event.value === "Crédito") {
             this.formGroup.get('qtdParcelas')?.setValidators(Validators.required)
             this.formGroup.get('valorParcela')?.setValidators(Validators.required)
@@ -228,7 +233,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
     }
 
     calculaValorParcelasPorValor(event: any) {
-        console.log(event)
         let formaPagamento = this.formGroup.get('formaPagamento')?.value;
         let qtdParcelas = Number(this.formGroup.get('qtdParcelas')?.value);
         let valor = Number(event)
@@ -251,7 +255,9 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.submitted = false;
         this.ordemServicoDialog = true;
         this.isNew = true;
-        this.ordemServico.statusServico = "INICIADO"
+        this.getCLientes();
+        this.getServicos();
+        this.ordemServico.status = "INICIADO"
         this.ordemServico.statusPagamento = "PENDENTE"
         this.ordemServico.formaPagamento = "Dinheiro"
         this.titulo = "Ordem de serviço"
@@ -261,7 +267,8 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.deleteOrdemServicosDialog = true;
     }
 
-    editOrdemServico(product: Product) {
+    editOrdemServico(ordemServico: OrdemServico) {
+        this.ordemServico = { ...ordemServico };
         this.ordemServicoDialog = true;
         this.titulo = "Editar ordem de serviço"
     }
@@ -286,8 +293,73 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     saveOrdemServico() {
         this.submitted = true;
-        console.log(this.formGroup.value)
+        if (this.ordemServico.id) {
+            this.update()
+        } else {
+            this.save()
+        }
     }
+
+    save() {
+        this.submitted = true;
+        if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
+            this.ordemServicoService.save(this.formGroup.value)
+                .pipe(
+                    catchError(error => {
+                        this.blockUI.stop();
+                        if (error == 400) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                        }
+                        if (error == 500) {
+                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        }
+                        this.formGroup.reset()
+                        this.hideDialog()
+                        return of();
+                    })
+                )
+                .subscribe(resp => {
+                    if (resp.id != null) {
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                    }
+                    this.formGroup.reset()
+                    this.hideDialog()
+                    this.blockUI.stop();
+                    this.pageOrdemServicos(this.pageable, this.filter)
+                })
+        }
+    }
+    setValuesOrdemServico() {
+        throw new Error('Method not implemented.');
+    }
+
+    update() {
+        throw new Error('Method not implemented.');
+    }
+
+    pageOrdemServicos(pageable: Pageable, filter: GlobalFilter) {
+        this.blockUI.start('Carregando...')
+        this.ordemServicoService.buscarOrdemServicos(pageable, filter)
+            .pipe(
+                catchError(error => {
+                    if (error == 500) {
+                        this.blockUI.stop();
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                    }
+                    return of();
+                })
+            )
+            .subscribe(resp => {
+                if (resp != null) {
+                    this.ordemServicos = resp.content
+                    let total = resp.totalElements;
+                    this.totalRecords = total;
+                }
+                this.blockUI.stop();
+            })
+    }
+
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
