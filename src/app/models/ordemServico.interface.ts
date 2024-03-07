@@ -7,13 +7,13 @@ export interface OrdemServico {
     dataOrcamento?: string;
     dataEntrega?: string;
     cliente?: ClienteList;
-    servico?: ServicoList;
-    valor?: string;
+    tipoServico?: ServicoList;
+    valorServico?: number;
     status?: string;
     statusPagamento?: string;
     formaPagamento?: string;
-    qtdParcelas?: string;
-    valorParcela?: string;
+    qtdParcelas?: number;
+    valorParcela?: number;
     observacao?: string;
   }
 
@@ -23,8 +23,8 @@ export interface OrdemServico {
     dataOrcamento?: string;
     dataEntrega?: string;
     cliente?: Cliente;
-    servico?: Servico;
-    valor?: string;
+    tipoServico?: Servico;
+    valorServico?: string;
     statusServico?: string;
     statusPagamento?: string;
     formaPagamento?: string;

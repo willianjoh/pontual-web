@@ -1,3 +1,4 @@
+import { CommonUtils } from 'src/app/utils/utils';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClienteList } from './../../models/cliente.interface';
 import { ClienteService } from './../../services/cliente.service';
@@ -14,6 +15,7 @@ import { ServicoService } from 'src/app/services/servico.service';
 import { ServicoCadastroModule } from '../servicos/servicoCadastro.module';
 import { ServicoList } from 'src/app/models/servico.interface';
 import { GlobalFilter, Pageable } from 'src/app/models/pageable.interface';
+import { formatDate } from '@angular/common';
 
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
@@ -127,6 +129,8 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.items = [{ label: 'Ordem de Serviço' }, { label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
         this.pageOrdemServicos(this.pageable, this.filter)
+        this.getCLientes();
+        this.getServicos();
         this.ordemServico.status = "INICIADO"
         this.ordemServico.statusPagamento = "PENDENTE"
         this.ordemServico.formaPagamento = "Dinheiro"
@@ -254,9 +258,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
     openNew() {
         this.submitted = false;
         this.ordemServicoDialog = true;
-        this.isNew = true;
-        this.getCLientes();
-        this.getServicos();
         this.ordemServico.status = "INICIADO"
         this.ordemServico.statusPagamento = "PENDENTE"
         this.ordemServico.formaPagamento = "Dinheiro"
@@ -353,6 +354,10 @@ export class OrdemServicoProdutosComponent implements OnInit {
             .subscribe(resp => {
                 if (resp != null) {
                     this.ordemServicos = resp.content
+                    this.ordemServicos?.map(r => {
+                        r.dataEntrega = CommonUtils.formatData(r.dataEntrega)
+                        r.dataOrcamento = CommonUtils.formatData(r.dataOrcamento)
+                    })
                     let total = resp.totalElements;
                     this.totalRecords = total;
                 }

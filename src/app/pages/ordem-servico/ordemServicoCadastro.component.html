@@ -36,13 +36,14 @@
                         <th style="width: 3rem">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
-                        <th pSortableColumn="code">Código identificador<p-sortIcon field="code"></p-sortIcon></th>
-                        <th pSortableColumn="category">Tipo de servico<p-sortIcon field="category"></p-sortIcon></th>
-                        <th pSortableColumn="price">Cliente<p-sortIcon field="price"></p-sortIcon></th>
-                        <th pSortableColumn="name">Data orçamento<p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="statusServico">Data entrega<p-sortIcon field="statusServico"></p-sortIcon>
+                        <th pSortableColumn="codigo">Código identificador<p-sortIcon field="codigo"></p-sortIcon></th>
+                        <th pSortableColumn="tipoServico.tipo">Tipo de servico<p-sortIcon field="tipoServico.tipo"></p-sortIcon></th>
+                        <th pSortableColumn="cliente.nome">Cliente<p-sortIcon field="cliente.nome"></p-sortIcon></th>
+                        <th pSortableColumn="dataOrcamento">Data orçamento<p-sortIcon field="dataOrcamento"></p-sortIcon></th>
+                        <th pSortableColumn="dataEntrega">Data entrega<p-sortIcon field="dataEntrega"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="price">Status do serviço<p-sortIcon field="price"></p-sortIcon></th>
+                        <th pSortableColumn="statusServico">Status do serviço<p-sortIcon field="statusServico"></p-sortIcon></th>
+                        <th pSortableColumn="statusPagamento">Status do pagamento<p-sortIcon field="statusPagamento"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -52,27 +53,31 @@
                             <p-tableCheckbox [value]="ordemServico"></p-tableCheckbox>
                         </td>
                         <td style="width:15%; min-width:10rem;"><span class="p-column-title">Código identificador</span>
-                            {{ordemServico.id || ordemServico.codigo}}
+                            {{ordemServico.codigo}}
                         </td>
                         <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Tipo de servico</span>
                             {{ordemServico.tipoServico.tipo}}
                         </td>
-                        <td style="width:17%; min-width:10rem;">
+                        <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Cliente</span>
                             {{ordemServico.cliente.nome + " " + ordemServico.cliente.sobrenome}}
                         </td>
-                        <td style="width:15%; min-width:10rem;">
+                        <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Data orçamento</span>
                             {{ordemServico.dataOrcamento}}
                         </td>
-                        <td style="width:15%; min-width:10rem;">
+                        <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Data entrega</span>
                             {{ordemServico.dataEntrega}}
                         </td>
-                        <td style="width:17%; min-width: 10rem;"><span class="p-column-title">Status do serviço</span>
+                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status do serviço</span>
                             <span
                                 [class]="'system-badge statusOrderService-' + (ordemServico.status ? ordemServico.status.toLowerCase() : '')">{{ordemServico.status}}</span>
+                        </td>
+                        <td style="width:22%; min-width: 10rem;"><span class="p-column-title">Status do pagamento</span>
+                            <span
+                                [class]="'system-badge statusPagamento-' + (ordemServico.statusPagamento ? ordemServico.statusPagamento.toLowerCase() : '')">{{ordemServico.statusPagamento}}</span>
                         </td>
                         <td>
                             <div class="flex">
@@ -86,21 +91,20 @@
                     </tr>
                 </ng-template>
             </p-table>
-            <p-dialog [(visible)]="ordemServicoDialog" [style]="{ width: '55vw', height: '710px' }" header="{{titulo}}"
-                [draggable]="true" [resizable]="true" [modal]="true" class="p-fluid">
+            <p-dialog [(visible)]="ordemServicoDialog" [style]="{ width: '55vw', height: '710px' }" header="{{titulo}}" [modal]="true" class="p-fluid">
                 <ng-template pTemplate="content">
                     <form [formGroup]="formGroup">
                         <div class="formgrid grid">
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">
                                     <p-autoComplete
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.servico}"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.tipoServico}"
                                         formControlName="tipoServico" [suggestions]="filteredservicos"
-                                        [(ngModel)]="ordemServico.servico" [dropdown]="true" inputId="tipoServicoId"
+                                        [(ngModel)]="ordemServico.tipoServico" [dropdown]="true" inputId="tipoServicoId"
                                         (completeMethod)="filterServicos($event)" field="tipo"></p-autoComplete>
                                     <label for="tipoServicoId">Servico</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.servico">Campo
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.tipoServico">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col-6" style="padding-top: 15px;">
@@ -193,8 +197,8 @@
                                     </p-dropdown>
                                     <label for="statusId">Status do serviço</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid"
-                                    *ngIf="submitted && !ordemServico.status">Campo Obrigatório.</small>
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.status">Campo
+                                    Obrigatório.</small>
                             </div>
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">
@@ -220,13 +224,13 @@
                         <div class="formgrid grid">
                             <div class="field col-5" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <p-inputNumber [(ngModel)]="ordemServico.valor" mode="currency" currency="BRL"
-                                        locale="pt-BR" formControlName="valorServico" inputId="valorServicoId"
-                                        (ngModelChange)="calculaValorParcelasPorValor($event)"
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.valor}"></p-inputNumber>
+                                    <p-inputNumber [(ngModel)]="ordemServico.valorServico" mode="currency"
+                                        currency="BRL" locale="pt-BR" formControlName="valorServico"
+                                        inputId="valorServicoId" (ngModelChange)="calculaValorParcelasPorValor($event)"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.valorServico}"></p-inputNumber>
                                     <label for="valorServicoId">Valor do serviço</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.valor">Campo
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.valorServico">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col" style="padding-top: 15px;">
