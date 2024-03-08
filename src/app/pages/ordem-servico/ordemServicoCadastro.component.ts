@@ -109,18 +109,18 @@ export class OrdemServicoProdutosComponent implements OnInit {
         ];
 
         this.parcelas = [
-            { label: '1x', value: '1' },
-            { label: '2x', value: '2' },
-            { label: '3x', value: '3' },
-            { label: '4x', value: '4' },
-            { label: '5x', value: '5' },
-            { label: '6x', value: '6' },
-            { label: '7x', value: '7' },
-            { label: '8x', value: '8' },
-            { label: '9x', value: '9' },
-            { label: '10x', value: '10' },
-            { label: '11x', value: '11' },
-            { label: '12x', value: '12' },
+            { value: '1' },
+            { value: '2' },
+            { value: '3' },
+            { value: '4' },
+            { value: '5' },
+            { value: '6' },
+            { value: '7' },
+            { value: '8' },
+            { value: '9' },
+            { value: '10' },
+            { value: '11' },
+            { value: '12' },
         ];
     }
 
@@ -147,8 +147,8 @@ export class OrdemServicoProdutosComponent implements OnInit {
             status: ['', Validators.required],
             statusPagamento: ['', Validators.required],
             formaPagamento: [, Validators.required],
-            qtdParcelas: [{ value: '', disabled: true }],
-            valorParcela: [{ value: '', disabled: true }],
+            qtdParcelas: [{ value: '', disabled: false }],
+            valorParcela: [{ value: '', disabled: false }],
             observacao: [{ value: null }]
         });
     }
@@ -257,6 +257,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     openNew() {
         this.submitted = false;
+        this.ordemServico = {}
         this.ordemServicoDialog = true;
         this.ordemServico.status = "INICIADO"
         this.ordemServico.statusPagamento = "PENDENTE"
@@ -357,6 +358,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                     this.ordemServicos?.map(r => {
                         r.dataEntrega = CommonUtils.formatData(r.dataEntrega)
                         r.dataOrcamento = CommonUtils.formatData(r.dataOrcamento)
+                        r.qtdParcelas = String(r.qtdParcelas)
                     })
                     let total = resp.totalElements;
                     this.totalRecords = total;
@@ -368,6 +370,14 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    page(event: any) {
+        this.pageable.page = event.first / event.rows;
+        this.pageable.size = event.rows;
+        this.pageable.sort = event.sortField != undefined ? event.sortField : ""
+        this.filter.filter = event.globalFilter
+        this.pageOrdemServicos(this.pageable, this.filter)
     }
 
 }

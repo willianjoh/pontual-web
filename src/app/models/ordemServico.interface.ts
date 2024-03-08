@@ -12,7 +12,7 @@ export interface OrdemServico {
     status?: string;
     statusPagamento?: string;
     formaPagamento?: string;
-    qtdParcelas?: number;
+    qtdParcelas?: string;
     valorParcela?: number;
     observacao?: string;
   }

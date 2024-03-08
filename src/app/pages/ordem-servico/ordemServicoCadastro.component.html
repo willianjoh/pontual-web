@@ -17,8 +17,8 @@
                 </ng-template>
             </p-toolbar>
             <p-table #dt [value]="ordemServicos!" [columns]="cols" responsiveLayout="scroll" [rows]="10"
-                [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
-                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="[10,20,30]" [paginator]="true" [showCurrentPageReport]="true" [lazy]="true"
+                [totalRecords]="totalRecords" (onLazyLoad)="page($event)"
                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
                 [(selection)]="selectedOrdemServicos" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
@@ -37,13 +37,17 @@
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
                         <th pSortableColumn="codigo">Código identificador<p-sortIcon field="codigo"></p-sortIcon></th>
-                        <th pSortableColumn="tipoServico.tipo">Tipo de servico<p-sortIcon field="tipoServico.tipo"></p-sortIcon></th>
+                        <th pSortableColumn="tipoServico.tipo">Tipo de servico<p-sortIcon
+                                field="tipoServico.tipo"></p-sortIcon></th>
                         <th pSortableColumn="cliente.nome">Cliente<p-sortIcon field="cliente.nome"></p-sortIcon></th>
-                        <th pSortableColumn="dataOrcamento">Data orçamento<p-sortIcon field="dataOrcamento"></p-sortIcon></th>
+                        <th pSortableColumn="dataOrcamento">Data orçamento<p-sortIcon
+                                field="dataOrcamento"></p-sortIcon></th>
                         <th pSortableColumn="dataEntrega">Data entrega<p-sortIcon field="dataEntrega"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="statusServico">Status do serviço<p-sortIcon field="statusServico"></p-sortIcon></th>
-                        <th pSortableColumn="statusPagamento">Status do pagamento<p-sortIcon field="statusPagamento"></p-sortIcon></th>
+                        <th pSortableColumn="statusServico">Status do serviço<p-sortIcon
+                                field="statusServico"></p-sortIcon></th>
+                        <th pSortableColumn="statusPagamento">Status do pagamento<p-sortIcon
+                                field="statusPagamento"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -91,7 +95,8 @@
                     </tr>
                 </ng-template>
             </p-table>
-            <p-dialog [(visible)]="ordemServicoDialog" [style]="{ width: '55vw', height: '710px' }" header="{{titulo}}" [modal]="true" class="p-fluid">
+            <p-dialog [(visible)]="ordemServicoDialog" [style]="{ width: '55vw', height: '710px' }" header="{{titulo}}"
+                [modal]="true" class="p-fluid">
                 <ng-template pTemplate="content">
                     <form [formGroup]="formGroup">
                         <div class="formgrid grid">
@@ -244,7 +249,7 @@
                                                 *ngIf="ordemServico && ordemServico.qtdParcelas">{{ordemServico.qtdParcelas}}</span>
                                         </ng-template>
                                         <ng-template let-option pTemplate="item">
-                                            <span>{{option.label}}</span>
+                                            <span>{{option.value}}</span>
                                         </ng-template>
                                     </p-dropdown>
                                     <label for="qtdParcelasId">Parcelas</label>
