@@ -13,6 +13,7 @@ import { CommonUtils } from 'src/app/utils/utils';
 import { ClienteList } from './../../models/cliente.interface';
 import { OrdemServico } from './../../models/ordemServico.interface';
 import { ClienteService } from './../../services/cliente.service';
+
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
     query: string;
@@ -242,7 +243,23 @@ export class OrdemServicoProdutosComponent implements OnInit {
     }
 
     confirmDeleteSelected() {
-        this.deleteOrdemServicoDialog = false;
+        this.deleteOrdemServicosDialog = false;
+        const ids = this.selectedOrdemServicos.map(ordemServico => ordemServico.id);
+        this.deleteOrdemServicos(ids)
+    }
+
+    private deleteOrdemServicos(ids : any) {
+        this.blockUI.start('Carregando...');
+        this.ordemServicoService.deleteAll(ids)
+            .pipe(
+                catchError(error => this.handleError(error, 'Erro ao excluir Ordens de Serviços.'))
+            )
+            .subscribe(() => {
+                this.blockUI.stop();
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordens de Serviços excluídas com sucesso.', life: 3000 });
+                this.selectedOrdemServicos = [];
+                this.pageOrdemServicos(this.pageable, this.filter);
+            });
     }
 
     confirmDelete() {
