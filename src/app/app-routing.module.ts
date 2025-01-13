@@ -14,7 +14,6 @@ import { LoginComponent } from './demo/components/auth/login/login.component';
                     { path: '', redirectTo: '/login', pathMatch: 'full' },
                     { path: 'dashboard', loadChildren: () => import('./demo/components/dashboard/dashboard.module').then(m => m.DashboardModule) },
                     { path: 'clientes/cadastro', loadChildren: () => import('./pages/clientes/clientesCadastro.module').then(m => m.ClientesCadastroModule) },
-                    { path: 'produtos/cadastro', loadChildren: () => import('./pages/produtos/produtosCadastro.module').then(m => m.ProdutosCadastroModule) },
                     { path: 'vendas/cadastro', loadChildren: () => import('./pages/vendas/vendasCadastro.module').then(m => m.VendasCadastroModule) },
                     { path: 'servico/cadastro', loadChildren: () => import('./pages/servicos/servicoCadastro.module').then(m => m.ServicoCadastroModule) },
                     { path: 'ordem-servico/cadastro', loadChildren: () => import('./pages/ordem-servico/ordemServicoCadastro.module').then(m => m.OrdemServicoCadastroModule) },

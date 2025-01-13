@@ -1,13 +1,12 @@
 import { Cliente, ClienteList } from "./cliente.interface";
-import { Servico, ServicoList } from "./servico.interface";
 
 export interface OrdemServico {
     id?: number;
     codigo?: string;
-    dataOrcamento?: string;
-    dataEntrega?: string;
-    cliente?: ClienteList;
-    tipoServico?: ServicoList;
+    dataOrcamento: string | null;
+    dataEntrega: string | null;
+    cliente: ClienteList;
+    servico?: string;
     valorServico?: number;
     status?: string;
     statusPagamento?: string;
@@ -22,8 +21,8 @@ export interface OrdemServico {
     codigo?: string;
     dataOrcamento?: string;
     dataEntrega?: string;
-    cliente?: Cliente;
-    tipoServico?: Servico;
+    cliente: Cliente;
+    descricao?: String;
     valorServico?: string;
     statusServico?: string;
     statusPagamento?: string;

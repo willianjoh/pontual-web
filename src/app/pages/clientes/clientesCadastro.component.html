@@ -37,13 +37,10 @@
                         <th style="width: 3rem">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
-                        <th pSortableColumn="id">Código <p-sortIcon field="id"></p-sortIcon></th>
-                        <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
-                        <th pSortableColumn="sobrenome">Sobrenome <p-sortIcon field="sobrenome"></p-sortIcon></th>
+                        <th pSortableColumn="nome">Nome<p-sortIcon field="nome"></p-sortIcon></th>
                         <th pSortableColumn="cpf">CPF<p-sortIcon field="cpf"></p-sortIcon></th>
-                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-                        <th pSortableColumn="celular">Celular <p-sortIcon field="celular"></p-sortIcon></th>
-                        <th pSortableColumn="fixo">Fixo <p-sortIcon field="fixo"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="celular">Contato<p-sortIcon field="celular"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -52,32 +49,21 @@
                         <td>
                             <p-tableCheckbox [value]="cliente"></p-tableCheckbox>
                         </td>
-                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">Código</span>
-                            {{cliente.id}}
-                        </td>
-                        <td style="width:12%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;">
                             <span class="p-column-title">Name</span>
                             {{cliente.nome}}
                         </td>
-                        <td style="width:16%; min-width:10rem;">
-                            <span class="p-column-title">Sobrenome</span>
-                            {{cliente.sobrenome}}
-                        </td>
-                        <td style="width:15%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;">
                             <span class="p-column-title">CPF</span>
                             {{cliente.cpf}}
                         </td>
-                        <td style="width:15%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;">
                             <span class="p-column-title">Email</span>
                             {{cliente.email}}
                         </td>
-                        <td style="width:13%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;">
                             <span class="p-column-title">Celular</span>
                             {{cliente.celular}}
-                        </td>
-                        <td style="width:13%; min-width:10rem;">
-                            <span class="p-column-title">Fixo</span>
-                            {{cliente.fixo}}
                         </td>
                         <td>
                             <div class="flex">
@@ -107,18 +93,6 @@
                                         Obrigatório.</small>
                                 </div>
                             </div>
-                            <div class="field col">
-                                <div class="form-group">
-                                    <span class="p-float-label">
-                                        <input pInputText id="sobrenome" formControlName="sobrenome"
-                                            [(ngModel)]="cliente.sobrenome"
-                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.sobrenome}" />
-                                        <label htmlFor="sobrenome">Sobrenome</label>
-                                    </span>
-                                    <small class="ng-invalid ng-dirty" *ngIf="submitted && !cliente.sobrenome">Campo
-                                        Obrigatório.</small>
-                                </div>
-                            </div>
                         </div>
                         <div class="formgrid grid">
                             <div class="field col" style="padding-top: 15px;">
@@ -130,39 +104,30 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="field col" style="padding-top: 15px;">
-                                <div class="form-group">
-                                    <span class="p-float-label">
-                                        <input pInputText id="email"
-                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && isEmailValid(formGroup, 'email')}"
-                                            formControlName="email" [(ngModel)]="cliente.email" />
-                                        <label htmlFor="email">Email</label>
-                                    </span>
-                                    <small class="ng-invalid ng-dirty" *ngIf="isEmailValid(formGroup, 'email')">Email
-                                        Inválido.</small>
+                                <div class="field col" style="padding-top: 15px;">
+                                    <div class="form-group">
+                                        <span class="p-float-label">
+                                            <p-inputMask mask="(99) 99999-9999" id="celular" formControlName="celular"
+                                                placeholder="(99) 99999-9999" [(ngModel)]="cliente.celular"
+                                                [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.celular}"></p-inputMask>
+                                            <label htmlFor="celular">Celular</label>
+                                        </span>
+                                        <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.celular">Campo
+                                            Obrigatório.</small>
+                                    </div>
                                 </div>
-                            </div>
                         </div>
                         <div class="formgrid grid">
                             <div class="field col" style="padding-top: 15px;">
                                 <div class="form-group">
                                     <span class="p-float-label">
-                                        <p-inputMask mask="(99) 99999-9999" id="celular" formControlName="celular"
-                                            placeholder="(99) 99999-9999" [(ngModel)]="cliente.celular"
-                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.celular}"></p-inputMask>
-                                        <label htmlFor="celular">Celular</label>
+                                        <input pInputText id="email"
+                                            [ngClass]="{'ng-invalid ng-dirty' : submitted && isEmailValid('email')}"
+                                            formControlName="email" [(ngModel)]="cliente.email" />
+                                        <label htmlFor="email">Email</label>
                                     </span>
-                                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.celular">Campo
-                                        Obrigatório.</small>
-                                </div>
-                            </div>
-                            <div class="field col" style="padding-top: 15px;">
-                                <div class="form-group">
-                                    <span class="p-float-label">
-                                        <p-inputMask id="fixo" mask="(99) 99999-9999" [(ngModel)]="cliente.fixo"
-                                            formControlName="fixo" placeholder="(99) 99999-9999"></p-inputMask>
-                                        <label htmlFor="fixo">Fixo</label>
-                                    </span>
+                                    <small class="ng-invalid ng-dirty" *ngIf="isEmailValid('email')">Email
+                                        Inválido.</small>
                                 </div>
                             </div>
                         </div>

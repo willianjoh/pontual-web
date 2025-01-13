@@ -1,7 +1,6 @@
 export interface Cliente {
     id?: number;
     nome?: string;
-    sobrenome?: string;
     cpf?: string;
     email?: string;
     celular?: string;
@@ -11,7 +10,6 @@ export interface Cliente {
   export interface ClienteList {
     id?: number;
     nome?: string;
-    sobrenome?: string;
     cpf?: string;
     email?: string;
     celular?: string;
@@ -27,7 +25,6 @@ export interface Cliente {
   export interface ClientePage {
     id?: number;
     nome?: string;
-    sobrenome?: string;
     cpf?: string;
     email?: string;
     celular?: string;

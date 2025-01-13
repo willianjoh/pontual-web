@@ -37,38 +37,6 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
-                label: 'Produtos',
-                items: [
-                    {
-                        label: 'Produtos', icon: 'pi pi-fw pi-bars',
-                        items: [
-                            {
-                                label: 'Gerenciamento de produtos', icon: 'pi pi-fw pi-bars', routerLink: ['produtos/cadastro'],
-                            },
-                            {
-                                label: 'Emitir relatório de produtos', icon: 'pi pi-fw pi-file-pdf',
-                            },
-                        ]
-                    }
-                ]
-            },
-            {
-                label: 'Serviços',
-                items: [
-                    {
-                        label: 'Tipos de serviços', icon: 'pi pi-fw pi-wrench',
-                        items: [
-                            {
-                                label: 'Gerenciamento de serviços', icon: 'pi pi-fw pi-wrench', routerLink: ['servico/cadastro'],
-                            },
-                            {
-                                label: 'Emitir relatório de serviços', icon: 'pi pi-fw pi-file-pdf',
-                            },
-                        ]
-                    }
-                ]
-            },
-            {
                 label: 'Vendas',
                 items: [
                     {

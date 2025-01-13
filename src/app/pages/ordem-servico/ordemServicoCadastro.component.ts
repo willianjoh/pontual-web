@@ -1,22 +1,18 @@
-import { CommonUtils } from 'src/app/utils/utils';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ClienteList } from './../../models/cliente.interface';
-import { ClienteService } from './../../services/cliente.service';
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
-import { OrdemServicoService } from 'src/app/services/ordemServico.service';
 import { OrdemServico, OrdemServicoPage } from 'src/app/models/ordemServico.interface';
-import { ServicoService } from 'src/app/services/servico.service';
-import { ServicoCadastroModule } from '../servicos/servicoCadastro.module';
-import { ServicoList } from 'src/app/models/servico.interface';
 import { GlobalFilter, Pageable } from 'src/app/models/pageable.interface';
-import { formatDate } from '@angular/common';
-
+import { ServicoList } from 'src/app/models/servico.interface';
+import { OrdemServicoService } from 'src/app/services/ordemServico.service';
+import { ServicoService } from 'src/app/services/servico.service';
+import { CommonUtils } from 'src/app/utils/utils';
+import { ClienteList } from './../../models/cliente.interface';
+import { ClienteService } from './../../services/cliente.service';
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
     query: string;
@@ -38,7 +34,11 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     ordemServicos: OrdemServicoPage[] | undefined;
 
-    ordemServico: OrdemServico = {};
+    ordemServico: OrdemServico = {
+        cliente: {},
+        dataOrcamento: '',
+        dataEntrega: ''
+    };
 
     selectedOrdemServicos: Product[] = [];
 
@@ -90,10 +90,9 @@ export class OrdemServicoProdutosComponent implements OnInit {
         private messageService: MessageService,
         private formBuilder: FormBuilder) {
         this.statusServico = [
-            { label: "INICIADO", value: "iniciado" },
             { label: "PENDENTE", value: "pendente" },
             { label: "CANCELADO", value: "cancelado" },
-            { label: "FINALIZADO", value: "finalizado" }
+            { label: "CONCLUIDO", value: "concluido" }
         ];
 
         this.statusPagamento = [
@@ -131,14 +130,11 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.pageOrdemServicos(this.pageable, this.filter)
         this.getCLientes();
         this.getServicos();
-        this.ordemServico.status = "INICIADO"
-        this.ordemServico.statusPagamento = "PENDENTE"
-        this.ordemServico.formaPagamento = "Dinheiro"
     }
 
     buildFormGroup() {
         this.formGroup = this.formBuilder.group({
-            tipoServico: ['', Validators.required],
+            servico: ['', Validators.required],
             codigo: ['', Validators.required],
             dataOrcamento: ['', Validators.required],
             dataEntrega: [''],
@@ -147,8 +143,8 @@ export class OrdemServicoProdutosComponent implements OnInit {
             status: ['', Validators.required],
             statusPagamento: ['', Validators.required],
             formaPagamento: [, Validators.required],
-            qtdParcelas: [{ value: '', disabled: false }],
-            valorParcela: [{ value: '', disabled: false }],
+            qtdParcelas: [{ value: '', disabled: true }],
+            valorParcela: [{ value: '', disabled: true }],
             observacao: [{ value: null }]
         });
     }
@@ -166,9 +162,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
                 })
             ).subscribe(resp => {
                 this.clientes = resp;
-                this.clientes?.map(r => {
-                    r.nome = r.nome?.concat(" " + r.sobrenome)
-                })
                 this.blockUI.stop();
             });
     }
@@ -257,9 +250,13 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     openNew() {
         this.submitted = false;
-        this.ordemServico = {}
+        this.ordemServico = {
+            cliente: {},
+            dataOrcamento: '',
+            dataEntrega: ''
+        };
         this.ordemServicoDialog = true;
-        this.ordemServico.status = "INICIADO"
+        this.ordemServico.status = "PENDENTE"
         this.ordemServico.statusPagamento = "PENDENTE"
         this.ordemServico.formaPagamento = "Dinheiro"
         this.titulo = "Ordem de serviço"
@@ -290,7 +287,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
     hideDialog() {
         this.ordemServicoDialog = false;
         this.submitted = false;
-        this.formGroup.reset()
     }
 
     saveOrdemServico() {
@@ -306,39 +302,172 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.submitted = true;
         if (this.formGroup.valid) {
             this.blockUI.start('Carregando...')
-            this.ordemServicoService.save(this.formGroup.value)
-                .pipe(
-                    catchError(error => {
-                        this.blockUI.stop();
-                        if (error == 400) {
-                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
-                        }
-                        if (error == 500) {
-                            this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+            if (this.ordemServico.status === 'CANCELADO') {
+                this.blockUI.stop();
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Não é possível incluir uma ordem de serviçio com situação: CANCELADO.',
+                    life: 3000
+                });
+                return;
+            }
+            const dataOrcamentoFormatada = this.formatData(this.ordemServico.dataOrcamento);
+            const dataEntregaFormatada = this.formatData(this.ordemServico.dataEntrega);
+
+            this.ordemServico.dataEntrega = this.ordemServico.dataEntrega
+                ? dataEntregaFormatada
+                : null;
+
+            this.ordemServico.dataOrcamento = this.ordemServico.dataOrcamento
+                ? dataOrcamentoFormatada
+                : null;
+            if (this.validarDatas(this.ordemServico.dataOrcamento, this.ordemServico.dataEntrega)) {
+
+                this.ordemServicoService.save(this.ordemServico)
+                    .pipe(
+                        catchError(error => {
+                            this.blockUI.stop();
+                            if (error == 409) {
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                            }
+                            if (error == 500) {
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                            }
+                            this.formGroup.reset()
+                            this.hideDialog()
+                            return of();
+                        })
+                    )
+                    .subscribe(resp => {
+                        if (resp.id != null) {
+                            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
                         }
                         this.formGroup.reset()
+                        this.blockUI.stop();
                         this.hideDialog()
-                        return of();
+                        this.pageOrdemServicos(this.pageable, this.filter)
                     })
-                )
-                .subscribe(resp => {
-                    if (resp.id != null) {
-                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-                    }
-                    this.formGroup.reset()
-                    this.hideDialog()
-                    this.blockUI.stop();
-                    this.pageOrdemServicos(this.pageable, this.filter)
-                })
+            } else {
+                this.blockUI.stop();
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'A data de entrega não pode ser anterior à data do orçamento.',
+                    life: 3000
+                });
+            }
         }
-    }
-    setValuesOrdemServico() {
-        throw new Error('Method not implemented.');
     }
 
     update() {
-        throw new Error('Method not implemented.');
+        this.submitted = true;
+        if (this.formGroup.valid) {
+            this.blockUI.start('Carregando...')
+            const dataOrcamentoFormatada = this.formatData(this.ordemServico.dataOrcamento);
+            const dataEntregaFormatada = this.formatData(this.ordemServico.dataEntrega);
+
+            this.ordemServico.dataEntrega = this.ordemServico.dataEntrega
+                ? dataEntregaFormatada
+                : null;
+
+            this.ordemServico.dataOrcamento = this.ordemServico.dataOrcamento
+                ? dataOrcamentoFormatada
+                : null;
+
+            if (this.validarDatas(this.ordemServico.dataOrcamento, this.ordemServico.dataEntrega)) {
+                this.ordemServicoService.update(this.ordemServico)
+                    .pipe(
+                        catchError(error => {
+                            this.blockUI.stop();
+                            if (error === 409) {
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Orçamento já existe na base de dados.", life: 3000 });
+                            }
+                            if (error === 500 || error === 400) {
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                            }
+                            this.formGroup.reset();
+                            this.hideDialog();
+                            return of();
+                        })
+                    )
+                    .subscribe(resp => {
+                        if (resp.id != null) {
+                            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                        }
+                        this.formGroup.reset();
+                        this.hideDialog();
+                        this.blockUI.stop();
+                        this.pageOrdemServicos(this.pageable, this.filter);
+                    });
+            }
+            else {
+                this.blockUI.stop();
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'A data de entrega não pode ser anterior à data do orçamento.',
+                    life: 3000
+                });
+            }
+        }
     }
+
+    private validarDatas(dataOrcamento: string | null, dataEntrega: string | null): boolean {
+        if (!dataOrcamento || !dataEntrega) {
+            return false; // Caso uma das datas seja nula, retorna inválido
+        }
+
+        try {
+            // Converte as datas para objetos Date
+            const [diaOrc, mesOrc, anoOrc] = dataOrcamento.split('/').map(Number);
+            const dataOrcamentoObj = new Date(anoOrc, mesOrc - 1, diaOrc);
+
+            const [diaEnt, mesEnt, anoEnt] = dataEntrega.split('/').map(Number);
+            const dataEntregaObj = new Date(anoEnt, mesEnt - 1, diaEnt);
+
+            // Retorna true se a data de entrega for igual ou posterior à data de orçamento
+            return dataEntregaObj >= dataOrcamentoObj;
+        } catch (error) {
+            return false; // Retorna inválido em caso de erro
+        }
+    }
+
+
+    private formatData(data: string | Date | null): string {
+        if (!data) {
+            return ''; // Retorna string vazia se a entrada for nula ou indefinida
+        }
+
+        try {
+            let date: Date;
+
+            // Se já for um objeto Date, usa diretamente
+            if (data instanceof Date) {
+                date = data;
+            } else if (/\d{2}\/\d{2}\/\d{4}/.test(data)) {
+                // Verifica se está no formato dd/MM/yyyy
+                const [day, month, year] = data.split('/').map(Number);
+                date = new Date(year, month - 1, day); // Converte para um objeto Date
+            } else {
+                // Tenta converter a string para um objeto Date
+                date = new Date(data);
+            }
+
+            // Verifica se a data é válida
+            if (!isNaN(date.getTime())) {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            return ''; // Retorna string vazia se a data não for válida
+        } catch (error) {
+            return ''; // Retorna string vazia em caso de erro
+        }
+    }
+
 
     pageOrdemServicos(pageable: Pageable, filter: GlobalFilter) {
         this.blockUI.start('Carregando...')

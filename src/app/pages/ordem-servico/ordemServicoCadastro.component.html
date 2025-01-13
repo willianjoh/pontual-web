@@ -36,17 +36,17 @@
                         <th style="width: 3rem">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
-                        <th pSortableColumn="codigo">Código identificador<p-sortIcon field="codigo"></p-sortIcon></th>
-                        <th pSortableColumn="tipoServico.tipo">Tipo de servico<p-sortIcon
-                                field="tipoServico.tipo"></p-sortIcon></th>
-                        <th pSortableColumn="cliente.nome">Cliente<p-sortIcon field="cliente.nome"></p-sortIcon></th>
-                        <th pSortableColumn="dataOrcamento">Data orçamento<p-sortIcon
-                                field="dataOrcamento"></p-sortIcon></th>
-                        <th pSortableColumn="dataEntrega">Data entrega<p-sortIcon field="dataEntrega"></p-sortIcon>
+                        <th pSortableColumn="codigo">Número OS<p-sortIcon field="codigo"></p-sortIcon></th>
+                        <th pSortableColumn="servico">Tipo de serviço<p-sortIcon field="servico"></p-sortIcon></th>
+                        <th pSortableColumn="cliente.nome">Nome do Cliente<p-sortIcon field="cliente.nome"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="statusServico">Status do serviço<p-sortIcon
+                        <th pSortableColumn="dataOrcamento">Data do Orçamento<p-sortIcon
+                                field="dataOrcamento"></p-sortIcon></th>
+                        <th pSortableColumn="dataEntrega">Data de Entrega<p-sortIcon field="dataEntrega"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="statusServico">Situação do Serviço<p-sortIcon
                                 field="statusServico"></p-sortIcon></th>
-                        <th pSortableColumn="statusPagamento">Status do pagamento<p-sortIcon
+                        <th pSortableColumn="statusPagamento">Situação do Pagamento<p-sortIcon
                                 field="statusPagamento"></p-sortIcon></th>
                         <th></th>
                     </tr>
@@ -56,22 +56,22 @@
                         <td>
                             <p-tableCheckbox [value]="ordemServico"></p-tableCheckbox>
                         </td>
-                        <td style="width:15%; min-width:10rem;"><span class="p-column-title">Código identificador</span>
+                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">Código identificador</span>
                             {{ordemServico.codigo}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">Tipo de servico</span>
-                            {{ordemServico.tipoServico.tipo}}
+                        <td style="width:19%; min-width:10rem;">
+                            <span class="p-column-title">Tipo de serviço</span>
+                            {{ordemServico.servico}}
                         </td>
                         <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Cliente</span>
-                            {{ordemServico.cliente.nome + " " + ordemServico.cliente.sobrenome}}
+                            {{ordemServico.cliente.nome}}
                         </td>
                         <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Data orçamento</span>
                             {{ordemServico.dataOrcamento}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
+                        <td style="width:12%; min-width:10rem;">
                             <span class="p-column-title">Data entrega</span>
                             {{ordemServico.dataEntrega}}
                         </td>
@@ -79,7 +79,7 @@
                             <span
                                 [class]="'system-badge statusOrderService-' + (ordemServico.status ? ordemServico.status.toLowerCase() : '')">{{ordemServico.status}}</span>
                         </td>
-                        <td style="width:22%; min-width: 10rem;"><span class="p-column-title">Status do pagamento</span>
+                        <td style="width:24%; min-width: 10rem;"><span class="p-column-title">Status do pagamento</span>
                             <span
                                 [class]="'system-badge statusPagamento-' + (ordemServico.statusPagamento ? ordemServico.statusPagamento.toLowerCase() : '')">{{ordemServico.statusPagamento}}</span>
                         </td>
@@ -102,14 +102,12 @@
                         <div class="formgrid grid">
                             <div class="field col-6" style="padding-top: 15px;">
                                 <span class="p-float-label">
-                                    <p-autoComplete
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.tipoServico}"
-                                        formControlName="tipoServico" [suggestions]="filteredservicos"
-                                        [(ngModel)]="ordemServico.tipoServico" [dropdown]="true" inputId="tipoServicoId"
-                                        (completeMethod)="filterServicos($event)" field="tipo"></p-autoComplete>
-                                    <label for="tipoServicoId">Servico</label>
+                                    <input pInputText [(ngModel)]="ordemServico.servico" formControlName="servico"
+                                        id="servico"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.servico}" />
+                                    <label for="servico">Descrição do Serviço</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.tipoServico">Campo
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.servico">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col-6" style="padding-top: 15px;">
@@ -117,7 +115,7 @@
                                     <input pInputText [(ngModel)]="ordemServico.codigo" formControlName="codigo"
                                         id="codigoId"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.codigo}" />
-                                    <label for="codigoId">Código de identificação</label>
+                                    <label for="codigoId">Número da Ordem de Serviço</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.codigo">Campo
                                     Obrigatório.</small>
@@ -129,7 +127,7 @@
                                     <p-calendar name="dataOrcamento" inputId="dataOrcamentoId"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.dataOrcamento}"
                                         formControlName="dataOrcamento" [(ngModel)]="ordemServico.dataOrcamento"
-                                        [showTime]="false" [showIcon]="true"></p-calendar>
+                                        [showTime]="false" dateFormat="dd/mm/yy" [showIcon]="true"></p-calendar>
                                     <label for="dataOrcamentoId">Data do orçamento</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
@@ -140,10 +138,10 @@
                                 <span class="p-float-label">
                                     <p-calendar name="dataEntrega"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.dataEntrega}"
-                                        inputId="dataEntregaId" formControlName="dataEntrega"
+                                        inputId="dataEntregaId" formControlName="dataEntrega" dateFormat="dd/mm/yy"
                                         [(ngModel)]="ordemServico.dataEntrega" [showTime]="false"
                                         [showIcon]="true"></p-calendar>
-                                    <label for="dataEntregaId">Data de entrega</label>
+                                    <label for="dataEntregaId">Data Prevista para Entrega</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.dataEntrega">Campo
                                     Obrigatório.</small>
@@ -153,13 +151,13 @@
                             <div class="field col-7" style="padding-top: 15px;">
                                 <span class="p-float-label">
                                     <p-autoComplete
-                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.cliente}"
+                                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.cliente.nome}"
                                         formControlName="cliente" [suggestions]="filteredClientes"
                                         [(ngModel)]="ordemServico.cliente" [dropdown]="true" inputId="clienteId"
                                         (completeMethod)="filterClientes($event)" field="nome"></p-autoComplete>
-                                    <label for="clienteId">Cliente</label>
+                                    <label for="clienteId">Nome do Cliente</label>
                                 </span>
-                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.cliente">Campo
+                                <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.cliente.nome">Campo
                                     Obrigatório.</small>
                             </div>
                             <div class="field col-5" style="padding-top: 15px;">
@@ -200,7 +198,7 @@
                                                 [class]="'system-badge statusOrderService-' + option.value.toString().toLowerCase()">{{option.label}}</span>
                                         </ng-template>
                                     </p-dropdown>
-                                    <label for="statusId">Status do serviço</label>
+                                    <label for="statusId">Situação do Serviço</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.status">Campo
                                     Obrigatório.</small>
@@ -220,7 +218,7 @@
                                                 [class]="'system-badge statusPagamento-' + option.value.toString().toLowerCase()">{{option.label}}</span>
                                         </ng-template>
                                     </p-dropdown>
-                                    <label for="statusPagamentoId">Status do pagamento</label>
+                                    <label for="statusPagamentoId">Situação do Pagamento</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
                                     *ngIf="submitted && !ordemServico.statusPagamento">Campo Obrigatório.</small>
@@ -233,7 +231,7 @@
                                         currency="BRL" locale="pt-BR" formControlName="valorServico"
                                         inputId="valorServicoId" (ngModelChange)="calculaValorParcelasPorValor($event)"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.valorServico}"></p-inputNumber>
-                                    <label for="valorServicoId">Valor do serviço</label>
+                                    <label for="valorServicoId">Valor Total do Serviço</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.valorServico">Campo
                                     Obrigatório.</small>
@@ -252,7 +250,7 @@
                                             <span>{{option.value}}</span>
                                         </ng-template>
                                     </p-dropdown>
-                                    <label for="qtdParcelasId">Parcelas</label>
+                                    <label for="qtdParcelasId">Quantidade de Parcelas</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
                                     *ngIf="submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' &&  !ordemServico.qtdParcelas">Campo
@@ -263,7 +261,7 @@
                                     <p-inputNumber inputId="valorParcelaId" [(ngModel)]="ordemServico.valorParcela"
                                         mode="currency" currency="BRL" locale="pt-BR" formControlName="valorParcela"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' && !ordemServico.valorParcela}"></p-inputNumber>
-                                    <label for="valorParcelaId">Valor da parcela</label>
+                                    <label for="valorParcelaId">Valor de Cada Parcela</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
                                     *ngIf="submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' && !ordemServico.valorParcela">Campo
@@ -275,7 +273,7 @@
                                 <span class="p-float-label">
                                     <textarea id="observacao" pInputTextarea formControlName="observacao"
                                         [(ngModel)]="ordemServico.observacao" rows="7" cols="20"></textarea>
-                                    <label for="observacao">Observações</label>
+                                    <label for="observacao">Observações Adicionais</label>
                                 </span>
                             </div>
                         </div>

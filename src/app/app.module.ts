@@ -32,7 +32,6 @@ import { ProductService } from './demo/service/product.service';
 import { AppLayoutModule } from './layout/app.layout.module';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
 import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServicoCadastro.component';
-import { CadastroProdutosComponent } from './pages/produtos/produtosCadastro.component';
 import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
 import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
 import { PaginatorModule } from 'primeng/paginator';
@@ -40,12 +39,16 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+
+registerLocaleData(localePt); 
+
 @NgModule({
     declarations: [
         AppComponent, 
         NotfoundComponent, 
         CadastroClientesComponent, 
-        CadastroProdutosComponent,
         CadastroVendasComponent,
         CadastroServicoComponent,
         OrdemServicoProdutosComponent
