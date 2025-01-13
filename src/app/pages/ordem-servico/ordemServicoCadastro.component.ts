@@ -5,13 +5,13 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
-import { OrdemServico, OrdemServicoPage } from 'src/app/models/ordemServico.interface';
+import { OrdemServicoPage } from 'src/app/models/ordemServico.interface';
 import { GlobalFilter, Pageable } from 'src/app/models/pageable.interface';
 import { ServicoList } from 'src/app/models/servico.interface';
 import { OrdemServicoService } from 'src/app/services/ordemServico.service';
-import { ServicoService } from 'src/app/services/servico.service';
 import { CommonUtils } from 'src/app/utils/utils';
 import { ClienteList } from './../../models/cliente.interface';
+import { OrdemServico } from './../../models/ordemServico.interface';
 import { ClienteService } from './../../services/cliente.service';
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
@@ -62,10 +62,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     filteredClientes: ClienteList[] = [];
 
-    servicos: ServicoList[] = []
-
-    filteredservicos: ServicoList[] = []
-
     home!: MenuItem;
 
     habilitaParcelas: boolean = true;
@@ -86,7 +82,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
     constructor(
         private ordemServicoService: OrdemServicoService,
         private clienteService: ClienteService,
-        private servicoService: ServicoService,
         private messageService: MessageService,
         private formBuilder: FormBuilder) {
         this.statusServico = [
@@ -129,7 +124,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
         this.pageOrdemServicos(this.pageable, this.filter)
         this.getCLientes();
-        this.getServicos();
     }
 
     buildFormGroup() {
@@ -166,22 +160,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
             });
     }
 
-    getServicos() {
-        this.blockUI.start('Carregando...')
-        this.servicoService.getAllServicos()
-            .pipe(
-                catchError(error => {
-                    this.blockUI.stop();
-                    if (error == 500 || error == 400) {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
-                    }
-                    return of();
-                })
-            ).subscribe(resp => {
-                this.servicos = resp;
-                this.blockUI.stop();
-            });
-    }
 
     filterClientes(event: AutoCompleteCompleteEvent) {
         let filtered: any[] = [];
@@ -195,20 +173,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
         }
 
         this.filteredClientes = filtered;
-    }
-
-    filterServicos(event: AutoCompleteCompleteEvent) {
-        let filtered: any[] = [];
-        let query = event.query;
-
-        for (let i = 0; i < (this.servicos as any[]).length; i++) {
-            let servico = (this.servicos as any[])[i];
-            if (servico.tipo.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-                filtered.push(servico);
-            }
-        }
-
-        this.filteredservicos = filtered;
     }
 
     selecionaFormaDePagamento(event: any) {
@@ -272,19 +236,43 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.titulo = "Editar ordem de serviço"
     }
 
-    deleteOrdemServico(product: Product) {
+    deleteOrdemServico(ordemServico: OrdemServico) {
+        this.ordemServico = { ...ordemServico };
         this.deleteOrdemServicoDialog = true;
     }
 
     confirmDeleteSelected() {
-        this.deleteOrdemServicosDialog = false;
+        this.deleteOrdemServicoDialog = false;
     }
 
     confirmDelete() {
-        this.deleteOrdemServicosDialog = false;
+        this.deleteOrdemServicoDialog = false;
+        if (this.ordemServico?.id) {
+            this.deleteOrdemServicoById(this.ordemServico.id);
+        }
+    }
+
+    private deleteOrdemServicoById(id: number) {
+        this.blockUI.start('Carregando...');
+        this.ordemServicoService.delete(id)
+            .pipe(
+                catchError(error => this.handleError(error, 'Erro ao excluir o ordem de serviço.'))
+            )
+            .subscribe(() => {
+                this.blockUI.stop();
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de serviço excluída com sucesso.', life: 3000 });
+                this.pageOrdemServicos(this.pageable, this.filter);
+            });
+    }
+
+    private handleError(error: any, message: string) {
+        this.blockUI.stop();
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 3000 });
+        return of();
     }
 
     hideDialog() {
+        this.formGroup.reset()
         this.ordemServicoDialog = false;
         this.submitted = false;
     }
@@ -502,9 +490,10 @@ export class OrdemServicoProdutosComponent implements OnInit {
     }
 
     page(event: any) {
+        const sortOrder = event.sortOrder === 1 ? "ASC" : event.sortOrder === -1 ? "DESC" : ""
         this.pageable.page = event.first / event.rows;
         this.pageable.size = event.rows;
-        this.pageable.sort = event.sortField != undefined ? event.sortField : ""
+        this.pageable.sort = event.sortField ? `${event.sortField},${sortOrder}` : "";
         this.filter.filter = event.globalFilter
         this.pageOrdemServicos(this.pageable, this.filter)
     }

@@ -1,4 +1,3 @@
-import { GlobalFilter, Sort } from './../../models/pageable.interface';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
@@ -6,9 +5,9 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { catchError, of } from 'rxjs';
 import { Cliente, ClientePage } from 'src/app/models/cliente.interface';
-import { Page, Pageable } from 'src/app/models/pageable.interface';
+import { Pageable } from 'src/app/models/pageable.interface';
+import { GlobalFilter } from './../../models/pageable.interface';
 import { ClienteService } from './../../services/cliente.service';
-import { U } from '@fullcalendar/core/internal-common';
 
 @Component({
     templateUrl: './clientesCadastro.component.html',
@@ -153,13 +152,13 @@ export class CadastroClientesComponent implements OnInit {
         this.cliente = {};
         this.submitted = false;
         this.clienteDialog = true;
-        this.titulo = 'Novo Cliente';
+        this.titulo = 'Cliente';
     }
 
     editarCliente(cliente: Cliente) {
         this.cliente = { ...cliente };
         this.clienteDialog = true;
-        this.titulo = 'Editar Cliente';
+        this.titulo = 'Cliente';
     }
 
     deleteCliente(cliente: Cliente) {
@@ -213,6 +212,7 @@ export class CadastroClientesComponent implements OnInit {
 
 
     hideDialog() {
+        this.formGroup.reset()
         this.clienteDialog = false;
         this.submitted = false;
     }
@@ -222,10 +222,11 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     page(event: any) {
+        const sortOrder = event.sortOrder === 1 ? "ASC" : event.sortOrder === -1 ? "DESC" : ""
         this.pageable.page = event.first / event.rows;
         this.pageable.size = event.rows;
-        this.pageable.sort = event.sortField || '';
-        this.filter.filter = event.globalFilter;
+        this.pageable.sort = event.sortField ? `${event.sortField},${sortOrder}` : "";
+        this.filter.filter = event.globalFilter
         this.pageClientes(this.pageable, this.filter);
     }
 }

@@ -29,8 +29,8 @@ export class LayoutService {
         inputStyle: 'outlined',
         menuMode: 'static',
         colorScheme: 'light',
-        theme: 'lara-light-indigo',
-        scale: 13,
+        theme: 'lara-light-blue',
+        scale: 11,
     };
 
     state: LayoutState = {

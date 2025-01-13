@@ -25,7 +25,8 @@ export interface Page {
 };
 
 export interface Pageable {
-    sort: Sort;
+    sort: string;
+    sortOrder: string;
     offset: number;
     pageSize: number;
     pageNumber: number;

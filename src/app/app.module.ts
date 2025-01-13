@@ -32,7 +32,6 @@ import { ProductService } from './demo/service/product.service';
 import { AppLayoutModule } from './layout/app.layout.module';
 import { CadastroClientesComponent } from './pages/clientes/clientesCadastro.component';
 import { OrdemServicoProdutosComponent } from './pages/ordem-servico/ordemServicoCadastro.component';
-import { CadastroServicoComponent } from './pages/servicos/servicoCadastro.component';
 import { CadastroVendasComponent } from './pages/vendas/vendasCadastro.component';
 import { PaginatorModule } from 'primeng/paginator';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -45,7 +44,6 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         NotfoundComponent, 
         CadastroClientesComponent, 
         CadastroVendasComponent,
-        CadastroServicoComponent,
         OrdemServicoProdutosComponent
     ],
     imports: [

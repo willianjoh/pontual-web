@@ -82,7 +82,7 @@
                 <ng-template pTemplate="content">
                     <form [formGroup]="formGroup">
                         <div class="formgrid grid">
-                            <div class="field col">
+                            <div class="field col" style="padding-top: 20px;">
                                 <div class="form-group">
                                     <span class="p-float-label">
                                         <input pInputText id="nome" formControlName="nome" [(ngModel)]="cliente.nome"
@@ -142,7 +142,7 @@
                 </ng-template>
             </p-dialog>
 
-            <p-dialog [(visible)]="deleteClienteDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <p-dialog [(visible)]="deleteClienteDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
                     <span *ngIf="cliente">Deseja deletar o cliente: <b>{{cliente.nome}}</b>?</span>
@@ -155,7 +155,7 @@
                 </ng-template>
             </p-dialog>
 
-            <p-dialog [(visible)]="deleteClientesDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <p-dialog [(visible)]="deleteClientesDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
                     <span>Deseja deletar todos os clientes selecionados?</span>

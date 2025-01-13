@@ -36,7 +36,7 @@
                         <th style="width: 3rem">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
-                        <th pSortableColumn="codigo">Número OS<p-sortIcon field="codigo"></p-sortIcon></th>
+                        <th pSortableColumn="codigoIdentificador">Número OS<p-sortIcon field="codigoIdentificador"></p-sortIcon></th>
                         <th pSortableColumn="servico">Tipo de serviço<p-sortIcon field="servico"></p-sortIcon></th>
                         <th pSortableColumn="cliente.nome">Nome do Cliente<p-sortIcon field="cliente.nome"></p-sortIcon>
                         </th>
@@ -44,10 +44,8 @@
                                 field="dataOrcamento"></p-sortIcon></th>
                         <th pSortableColumn="dataEntrega">Data de Entrega<p-sortIcon field="dataEntrega"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="statusServico">Situação do Serviço<p-sortIcon
+                        <th pSortableColumn="status">Situação do Serviço<p-sortIcon
                                 field="statusServico"></p-sortIcon></th>
-                        <th pSortableColumn="statusPagamento">Situação do Pagamento<p-sortIcon
-                                field="statusPagamento"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -56,32 +54,28 @@
                         <td>
                             <p-tableCheckbox [value]="ordemServico"></p-tableCheckbox>
                         </td>
-                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">Código identificador</span>
+                        <td style="width:15%; min-width:10rem;"><span class="p-column-title">Código identificador</span>
                             {{ordemServico.codigo}}
                         </td>
-                        <td style="width:19%; min-width:10rem;">
+                        <td style="width:20%; min-width:10rem;">
                             <span class="p-column-title">Tipo de serviço</span>
                             {{ordemServico.servico}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
+                        <td style="width:20%; min-width:10rem;">
                             <span class="p-column-title">Cliente</span>
                             {{ordemServico.cliente.nome}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
+                        <td style="width:15%; min-width:10rem;">
                             <span class="p-column-title">Data orçamento</span>
                             {{ordemServico.dataOrcamento}}
                         </td>
-                        <td style="width:12%; min-width:10rem;">
+                        <td style="width:15%; min-width:10rem;">
                             <span class="p-column-title">Data entrega</span>
                             {{ordemServico.dataEntrega}}
                         </td>
-                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status do serviço</span>
+                        <td style="width:15%; min-width: 10rem;"><span class="p-column-title">Status do serviço</span>
                             <span
                                 [class]="'system-badge statusOrderService-' + (ordemServico.status ? ordemServico.status.toLowerCase() : '')">{{ordemServico.status}}</span>
-                        </td>
-                        <td style="width:24%; min-width: 10rem;"><span class="p-column-title">Status do pagamento</span>
-                            <span
-                                [class]="'system-badge statusPagamento-' + (ordemServico.statusPagamento ? ordemServico.statusPagamento.toLowerCase() : '')">{{ordemServico.statusPagamento}}</span>
                         </td>
                         <td>
                             <div class="flex">
@@ -100,7 +94,7 @@
                 <ng-template pTemplate="content">
                     <form [formGroup]="formGroup">
                         <div class="formgrid grid">
-                            <div class="field col-6" style="padding-top: 15px;">
+                            <div class="field col-6" style="padding-top: 20px;">
                                 <span class="p-float-label">
                                     <input pInputText [(ngModel)]="ordemServico.servico" formControlName="servico"
                                         id="servico"
@@ -287,10 +281,10 @@
                 </ng-template>
             </p-dialog>
 
-            <p-dialog [(visible)]="deleteOrdemServicoDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <p-dialog [(visible)]="deleteOrdemServicoDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                    <span *ngIf="ordemServico">Deseja deletar a ordem de serviço: <b>{{ordemServico.codigo}}</b>?</span>
+                    <span *ngIf="ordemServico">Deseja deletar a ordem de serviço: <b> {{ordemServico.codigo}}</b>?</span>
                 </div>
                 <ng-template pTemplate="footer">
                     <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"
@@ -300,11 +294,11 @@
                 </ng-template>
             </p-dialog>
 
-            <p-dialog [(visible)]="deleteOrdemServicosDialog" header="Confirme" [modal]="true"
+            <p-dialog [(visible)]="deleteOrdemServicosDialog" header="Confirmar" [modal]="true"
                 [style]="{width:'450px'}">
                 <div class="flex align-items-center justify-content-center">
                     <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                    <span>Deseja deletar todos os clientes selecionados?</span>
+                    <span>Deseja deletar todas as OS's selecionadas?</span>
                 </div>
                 <ng-template pTemplate="footer">
                     <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Não"

@@ -36,9 +36,9 @@ export class AppComponent implements OnInit {
             ripple: false,                      //toggles ripple on and off
             inputStyle: 'outlined',             //default style for input elements
             menuMode: 'static',                 //layout mode of the menu, valid values are "static" and "overlay"
-            colorScheme: 'dark',               //color scheme of the template, valid values are "light" and "dark"
-            theme: 'bootstrap4-dark-blue',         //default component theme for PrimeNG
-            scale: 12                          //size of the body font size to scale the whole application
+            colorScheme: 'light',               //color scheme of the template, valid values are "light" and "dark"
+            theme: 'lara-light-blue',         //default component theme for PrimeNG
+            scale: 12                        //size of the body font size to scale the whole application
         };
     }
 }
