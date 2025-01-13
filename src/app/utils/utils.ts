@@ -6,28 +6,16 @@ export class CommonUtils {
     }
 
     static formatData(data: string | undefined): string {
-        if (data != null) {
-            const today = new Date(data);
-            var year = today.getFullYear();
-            var month = today.getMonth() + 1;
-            var day = today.getDate();
-
-            var monthStr
-            var dayStr
-
-            if (month < 10) {
-                monthStr = '0' + month;
-            } else {
-                monthStr = month
-            }
-
-            if (day < 10) {
-                dayStr = '0' + day;
-            } else {
-                dayStr = day
-            }
-
-            return dayStr + '/' + monthStr + '/' + year;
+        if (data) {
+            const [year, month, day] = data.split('-').map(Number);
+    
+            const today = new Date(year, month - 1, day);
+    
+            const formattedDay = String(today.getDate()).padStart(2, '0');
+            const formattedMonth = String(today.getMonth() + 1).padStart(2, '0');
+            const formattedYear = today.getFullYear();
+    
+            return `${formattedDay}/${formattedMonth}/${formattedYear}`;
         }
         return "";
     }

@@ -252,7 +252,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.submitted = false;
         this.ordemServico = {
             cliente: {},
-            dataOrcamento: '',
+            dataOrcamento: this.formatData(new Date()),
             dataEntrega: ''
         };
         this.ordemServicoDialog = true;

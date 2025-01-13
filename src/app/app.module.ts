@@ -39,11 +39,6 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
-import { registerLocaleData } from '@angular/common';
-import localePt from '@angular/common/locales/pt';
-
-registerLocaleData(localePt); 
-
 @NgModule({
     declarations: [
         AppComponent, 
