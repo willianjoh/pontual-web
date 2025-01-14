@@ -104,7 +104,7 @@
                                 <small class="ng-dirty ng-invalid" *ngIf="submitted && !ordemServico.servico">Campo
                                     Obrigatório.</small>
                             </div>
-                            <div class="field col-6" style="padding-top: 15px;">
+                            <div class="field col-6" style="padding-top: 20px;">
                                 <span class="p-float-label">
                                     <input pInputText [(ngModel)]="ordemServico.codigo" formControlName="codigo"
                                         id="codigoId"
@@ -276,7 +276,7 @@
                 <ng-template pTemplate="footer">
                     <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
                         (click)="hideDialog()"></button>
-                    <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
+                    <button pButton pRipple label="Salvar" icon="pi pi-save" class="p-button-text"
                         (click)="saveOrdemServico()"></button>
                 </ng-template>
             </p-dialog>

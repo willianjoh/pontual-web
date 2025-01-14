@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
-import { LocaleSettings } from 'primeng/calendar';
 import { Table } from 'primeng/table';
-import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
+import { GlobalFilter, Pageable } from 'src/app/models/pageable.interface';
+import { VendaService } from 'src/app/services/venda.service';
+import { Venda } from './../../models/venda.interface';
 
 @Component({
     styleUrls: ['./vendasCadastro.component.scss'],
@@ -12,167 +13,147 @@ import { ProductService } from 'src/app/demo/service/product.service';
     providers: [MessageService]
 })
 export class CadastroVendasComponent implements OnInit {
-    productDialog: boolean = false;
-    
-    deleteProductDialog: boolean = false;
-    
-    deleteProductsDialog: boolean = false;
-    
-    products: Product[] = [];
-    
-    product: Product = {};
 
-    selectedProducts: Product[] = [];
+    formGroup!: FormGroup;
+
+    vendaDialog: boolean = false;
+
+    deleteVendaDialog: boolean = false;
+
+    deleteVendasDialog: boolean = false;
+
+    vendas!: Venda[];
+
+    venda: Venda = {
+        data: '',
+    };
+
+
+    selectedVendas: Venda[] = [];
 
     submitted: boolean = false;
 
     cols: any[] = [];
 
-    statuses: any[] = [];
+    statusVenda: any[] = [];
 
-    parcelas: any [] = [];
+    statusPagamento: any[] = [];
+
+    formaPagamento: any[] = [];
 
     rowsPerPageOptions = [5, 10, 20];
-    
+
     items: MenuItem[] = [];
-    
+
+    parcelas: any[] = [];
+
     home!: MenuItem;
-    
+
+    habilitaParcelas: boolean = true;
+
     isNew: boolean = false;
-    
-    titulo: any = 'Venda/Serviço';
+
+    pageable: Pageable = new Pageable();
+
+    filter: GlobalFilter = new GlobalFilter();
+
+    titulo: string = "Vendas";
+
+    showSpinner = false
 
     @BlockUI() blockUI!: NgBlockUI;
+    totalRecords: number = 10;
 
-    constructor(private productService: ProductService, private messageService: MessageService) {
-        this.blockUI.start('Carregando...')
-        setTimeout(() => {
-            this.blockUI.stop();
-        }, 1000)
-    }
-    
-    ngOnInit() {
-        this.items = [{ label: 'Vendas' }, { label: 'Vendas' }, { label: 'Cadastro de Vendas' }];
-        this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
+    constructor(
+        private vendaService: VendaService,
+        private messageService: MessageService,
+        private formBuilder: FormBuilder) {
 
-        this.productService.getProducts().then(data => this.products = data);
-
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
+        this.statusPagamento = [
+            { label: "PENDENTE", value: "pendente" },
+            { label: "PAGO", value: "pago" },
         ];
 
-        this.statuses = [
-            { label: 'Dinheiro', value: '1' },
-            { label: 'Débito', value: '2' },
-            { label: 'Crédito', value: '3' }
+        this.formaPagamento = [
+            { code: 1, label: 'Dinheiro' },
+            { code: 2, label: 'Débito' },
+            { code: 3, label: 'Crédito' },
+            { code: 4, label: 'Pix' },
         ];
 
         this.parcelas = [
-            { label: '1x', value: '1' },
-            { label: '2x', value: '2' },
-            { label: '3x', value: '3' },
-            { label: '4x', value: '4' },
-            { label: '5x', value: '5' },
-            { label: '6x', value: '6' },
-            { label: '7x', value: '7' },
-            { label: '8x', value: '8' },
-            { label: '9x', value: '9' },
-            { label: '10x', value: '10' },
-            { label: '11x', value: '11' },
-            { label: '12x', value: '12' },
+            { value: '1' },
+            { value: '2' },
+            { value: '3' },
+            { value: '4' },
+            { value: '5' },
+            { value: '6' },
+            { value: '7' },
+            { value: '8' },
+            { value: '9' },
+            { value: '10' },
+            { value: '11' },
+            { value: '12' },
         ];
     }
 
+    ngOnInit() {
+        this.items = [{ label: 'Vendas' }, { label: 'Vendas' }, { label: 'Cadastro de Vendas' }];
+        this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
+    }
+
+    buildFormGroup() {
+        this.formGroup = this.formBuilder.group({
+            descricao: ['', Validators.required],
+            data: ['', Validators.required],
+            valor: ['', Validators.required],
+            statusPagamento: ['', Validators.required],
+            formaPagamento: [, Validators.required],
+            qtdParcelas: [{ value: '', disabled: true }],
+            valorParcela: [{ value: '', disabled: true }],
+            observacao: [{ value: null }]
+        });
+    }
     openNew() {
-        this.product = {};
+        this.venda = {
+            data: '',
+        };
         this.submitted = false;
-        this.productDialog = true;
+        this.vendaDialog = true;
         this.isNew = true;
         this.titulo = "Venda/Serviço"
     }
 
-    deleteSelectedProducts() {
-        this.deleteProductsDialog = true;
+    deleteSelectedVendas() {
+        this.deleteVendasDialog = true;
     }
 
-    editProduct(product: Product) {
-        this.product = { ...product };
-        this.productDialog = true;
+    editVenda(product: Venda) {
+        this.venda = { ...product };
+        this.vendaDialog = true;
         this.titulo = "Editar Venda/Serviço"
     }
 
-    deleteProduct(product: Product) {
-        this.deleteProductDialog = true;
-        this.product = { ...product };
+    deleteVenda(venda: Venda) {
+        this.deleteVendaDialog = true;
+        this.venda = { ...venda };
     }
 
     confirmDeleteSelected() {
-        this.deleteProductsDialog = false;
-        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.selectedProducts = [];
+        this.deleteVendasDialog = false;
+
     }
 
     confirmDelete() {
-        this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
-        this.product = {};
+        this.deleteVendaDialog = false;
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.vendaDialog = false;
         this.submitted = false;
     }
 
-    saveProduct() {
-        this.submitted = true;
-
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-                this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Venda/Serviço atualizada.', life: 3000 });
-            } else {
-                this.product.id = this.createId();
-                this.product.code = this.createId();
-                this.product.image = 'product-placeholder.svg';
-                // @ts-ignore
-                this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
-                this.products.push(this.product);
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Venda/Serviço cadastrada.', life: 3000 });
-            }
-
-            this.products = [...this.products];
-            this.productDialog = false;
-            this.product = {};
-        }
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
+    saveVenda() {
     }
 
     onGlobalFilter(table: Table, event: Event) {

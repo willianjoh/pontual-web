@@ -2,26 +2,26 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Cliente, ClienteList } from '../models/cliente.interface';
 import { GlobalFilter, Page, Pageable } from '../models/pageable.interface';
+import { Venda } from '../models/venda.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ClienteService {
-  apiURL: string = environment.apiURLBase + '/api/cliente'
+export class VendaService {
+  apiURL: string = environment.apiURLBase + '/api/vendas'
 
   constructor(private http: HttpClient) { }
 
-  save(cliente: Cliente): Observable<Cliente> {
-    return this.http.post<Cliente>(this.apiURL, cliente)
+  save(venda: Venda): Observable<Venda> {
+    return this.http.post<Venda>(this.apiURL, venda)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  update(cliente: Cliente): Observable<Cliente> {
-    return this.http.put<Cliente>(this.apiURL, cliente)
+  update(venda: Venda): Observable<Venda> {
+    return this.http.put<Venda>(this.apiURL, venda)
       .pipe(
         catchError(this.handleError)
       );
@@ -49,15 +49,8 @@ export class ClienteService {
       );
   }
 
-  getAllClientes(): Observable<ClienteList[]> {
-    return this.http.get<ClienteList[]>(`${this.apiURL}/listarTodos`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  buscarTodosClientes(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(`${this.apiURL}/todos`)
+  buscarTodosClientes(): Observable<Venda[]> {
+    return this.http.get<Venda[]>(`${this.apiURL}/todos`)
       .pipe(
         catchError(this.handleError)
       );

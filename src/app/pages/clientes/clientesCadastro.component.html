@@ -13,7 +13,7 @@
                         <button id="deleteAll" pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
                             class="p-button-danger" (click)="deleteSelectedClientes()"
                             [disabled]="!selectedClientes || !selectedClientes.length"></button>
-                    </div>
+                        </div>
                 </ng-template>
             </p-toolbar>
             <p-table #dt [value]="clientes!" [columns]="cols" responsiveLayout="scroll" [rows]="10" [columns]="cols"
@@ -137,7 +137,7 @@
                 <ng-template pTemplate="footer">
                     <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
                         (click)="hideDialog()"></button>
-                    <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
+                    <button pButton pRipple label="Salvar" icon="pi pi-save" class="p-button-text"
                         (click)="saveCliente()"></button>
                 </ng-template>
             </p-dialog>
