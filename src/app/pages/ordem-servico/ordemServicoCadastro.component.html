@@ -6,20 +6,21 @@
         <div class="card px-6 py-6">
             <p-toast></p-toast>
             <p-toolbar styleClass="mb-4">
-                <ng-template pTemplate="left">
-                    <div class="my-2">
-                        <button pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
-                            class="p-button-success mr-2" (click)="openNew()"></button>
-                        <button pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
-                            class="p-button-danger" (click)="deleteSelectedOrdemServicos()"
-                            [disabled]="!selectedOrdemServicos || !selectedOrdemServicos.length"></button>
-                    </div>
-                </ng-template>
+                <div class="my-2 p-toolbar-group-left">
+                    <button id="openNew" pButton pRipple label="Novo" style="width:160px" icon="pi pi-plus"
+                        class="p-button-success mr-2" (click)="openNew()"></button>
+                    <button id="deleteAll" pButton pRipple label="Deletar" style="width:160px" icon="pi pi-trash"
+                        class="p-button-danger" (click)="deleteSelectedOrdemServicos()"
+                        [disabled]="!selectedOrdemServicos || !selectedOrdemServicos.length"></button>
+                </div>
+                <div class="p-toolbar-group-right">
+                    <p-button label="Exportar" icon="pi pi-file-excel" (click)="exportToExcel()"></p-button>
+                </div>
             </p-toolbar>
             <p-table #dt [value]="ordemServicos!" [columns]="cols" responsiveLayout="scroll" [rows]="10"
-                [rowsPerPageOptions]="[10,20,30]" [paginator]="true" [showCurrentPageReport]="true" [lazy]="true"
+                [rowsPerPageOptions]="[10,20,30, 50]" [paginator]="true" [showCurrentPageReport]="true" [lazy]="true"
                 [totalRecords]="totalRecords" (onLazyLoad)="page($event)"
-                currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
+                currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros"
                 [(selection)]="selectedOrdemServicos" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
@@ -122,7 +123,7 @@
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && !ordemServico.dataOrcamento}"
                                         formControlName="dataOrcamento" [(ngModel)]="ordemServico.dataOrcamento"
                                         [showTime]="false" dateFormat="dd/mm/yy" [showIcon]="true"></p-calendar>
-                                    <label for="dataOrcamentoId">Data do orçamento</label>
+                                    <label for="dataOrcamentoId">Data do Orçamento</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
                                     *ngIf="submitted && !ordemServico.dataOrcamento">Campo
@@ -169,7 +170,7 @@
                                             <span>{{option.label}}</span>
                                         </ng-template>
                                     </p-dropdown>
-                                    <label for="formaPagamentoId">Forma de pagamento</label>
+                                    <label for="formaPagamentoId">Forma de Pagamento</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
                                     *ngIf="submitted && !ordemServico.formaPagamento">Campo
@@ -255,7 +256,7 @@
                                     <p-inputNumber inputId="valorParcelaId" [(ngModel)]="ordemServico.valorParcela"
                                         mode="currency" currency="BRL" locale="pt-BR" formControlName="valorParcela"
                                         [ngClass]="{'ng-invalid ng-dirty' : submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' && !ordemServico.valorParcela}"></p-inputNumber>
-                                    <label for="valorParcelaId">Valor de Cada Parcela</label>
+                                    <label for="valorParcelaId">Valor da Parcela</label>
                                 </span>
                                 <small class="ng-dirty ng-invalid"
                                     *ngIf="submitted && this.formGroup.get('formaPagamento')?.value === 'Crédito' && !ordemServico.valorParcela">Campo

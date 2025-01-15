@@ -18,6 +18,7 @@ import { AppConfigModule } from './config/config.module';
 import { AppSidebarComponent } from "./app.sidebar.component";
 import { AppLayoutComponent } from "./app.layout.component";
 import { BreadcrumbModule } from 'primeng/breadcrumb';
+import {SlideMenuModule} from 'primeng/slidemenu';
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
         RouterModule,
         AppConfigModule,
         BreadcrumbModule,
+        SlideMenuModule,
     ],
     exports: [AppLayoutComponent]
 })

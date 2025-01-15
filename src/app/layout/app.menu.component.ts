@@ -43,7 +43,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Vendas', icon: 'pi pi-fw pi-chart-line',
                         items: [
                             {
-                                label: 'Cadastro de vendas', icon: 'pi pi-fw pi-chart-line', routerLink: ['vendas/cadastro'],
+                                label: 'Gerenciamento de vendas', icon: 'pi pi-fw pi-chart-line', routerLink: ['vendas/cadastro'],
                             },
                             {
                                 label: 'Emitir relatório de vendas', icon: 'pi pi-fw pi-file-pdf',

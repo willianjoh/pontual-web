@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { saveAs } from 'file-saver';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -7,9 +8,9 @@ import { catchError, of } from 'rxjs';
 import { Product } from 'src/app/demo/api/product';
 import { OrdemServicoPage } from 'src/app/models/ordemServico.interface';
 import { GlobalFilter, Pageable } from 'src/app/models/pageable.interface';
-import { ServicoList } from 'src/app/models/servico.interface';
 import { OrdemServicoService } from 'src/app/services/ordemServico.service';
 import { CommonUtils } from 'src/app/utils/utils';
+import * as XLSX from 'xlsx';
 import { ClienteList } from './../../models/cliente.interface';
 import { OrdemServico } from './../../models/ordemServico.interface';
 import { ClienteService } from './../../services/cliente.service';
@@ -33,7 +34,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     deleteOrdemServicosDialog: boolean = false;
 
-    ordemServicos: OrdemServicoPage[] | undefined;
+    ordemServicos!: OrdemServicoPage[];
 
     ordemServico: OrdemServico = {
         cliente: {},
@@ -121,7 +122,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     ngOnInit() {
         this.buildFormGroup()
-        this.items = [{ label: 'Ordem de Serviço' }, { label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
+        this.items = [{ label: 'Ordem de Serviço' }, { label: 'Emitir Ordem de Serviço' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
         this.pageOrdemServicos(this.pageable, this.filter)
         this.getCLientes();
@@ -151,7 +152,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                 catchError(error => {
                     this.blockUI.stop();
                     if (error == 500 || error == 400) {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
                     }
                     return of();
                 })
@@ -248,7 +249,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.deleteOrdemServicos(ids)
     }
 
-    private deleteOrdemServicos(ids : any) {
+    private deleteOrdemServicos(ids: any) {
         this.blockUI.start('Carregando...');
         this.ordemServicoService.deleteAll(ids)
             .pipe(
@@ -256,7 +257,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
             )
             .subscribe(() => {
                 this.blockUI.stop();
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordens de Serviços excluídas com sucesso.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordens de Serviços excluídas com sucesso.', life: 4000 });
                 this.selectedOrdemServicos = [];
                 this.pageOrdemServicos(this.pageable, this.filter);
             });
@@ -277,14 +278,14 @@ export class OrdemServicoProdutosComponent implements OnInit {
             )
             .subscribe(() => {
                 this.blockUI.stop();
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de serviço excluída com sucesso.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de serviço excluída com sucesso.', life: 4000 });
                 this.pageOrdemServicos(this.pageable, this.filter);
             });
     }
 
     private handleError(error: any, message: string) {
         this.blockUI.stop();
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 3000 });
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 4000 });
         return of();
     }
 
@@ -313,7 +314,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                     severity: 'error',
                     summary: 'Erro',
                     detail: 'Não é possível incluir uma ordem de serviçio com situação: CANCELADO.',
-                    life: 3000
+                    life: 4000
                 });
                 return;
             }
@@ -334,10 +335,10 @@ export class OrdemServicoProdutosComponent implements OnInit {
                         catchError(error => {
                             this.blockUI.stop();
                             if (error == 409) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 3000 });
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 4000 });
                             }
                             if (error == 500) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
                             }
                             this.formGroup.reset()
                             this.hideDialog()
@@ -346,7 +347,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                     )
                     .subscribe(resp => {
                         if (resp.id != null) {
-                            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 4000 });
                         }
                         this.formGroup.reset()
                         this.blockUI.stop();
@@ -359,7 +360,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                     severity: 'error',
                     summary: 'Erro',
                     detail: 'A data de entrega não pode ser anterior à data do orçamento.',
-                    life: 3000
+                    life: 4000
                 });
             }
         }
@@ -386,10 +387,10 @@ export class OrdemServicoProdutosComponent implements OnInit {
                         catchError(error => {
                             this.blockUI.stop();
                             if (error === 409) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Orçamento já existe na base de dados.", life: 3000 });
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Orçamento já existe na base de dados.", life: 4000 });
                             }
                             if (error === 500 || error === 400) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
                             }
                             this.formGroup.reset();
                             this.hideDialog();
@@ -398,7 +399,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                     )
                     .subscribe(resp => {
                         if (resp.id != null) {
-                            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 3000 });
+                            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 4000 });
                         }
                         this.formGroup.reset();
                         this.hideDialog();
@@ -412,7 +413,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
                     severity: 'error',
                     summary: 'Erro',
                     detail: 'A data de entrega não pode ser anterior à data do orçamento.',
-                    life: 3000
+                    life: 4000
                 });
             }
         }
@@ -481,14 +482,14 @@ export class OrdemServicoProdutosComponent implements OnInit {
                 catchError(error => {
                     if (error == 500) {
                         this.blockUI.stop();
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 3000 });
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
                     }
                     return of();
                 })
             )
             .subscribe(resp => {
                 if (resp != null) {
-                    this.ordemServicos = resp.content
+                    this.ordemServicos = resp.content || [];
                     this.ordemServicos?.map(r => {
                         r.dataEntrega = CommonUtils.formatData(r.dataEntrega)
                         r.dataOrcamento = CommonUtils.formatData(r.dataOrcamento)
@@ -513,6 +514,50 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.pageable.sort = event.sortField ? `${event.sortField},${sortOrder}` : "";
         this.filter.filter = event.globalFilter
         this.pageOrdemServicos(this.pageable, this.filter)
+    }
+
+    exportToExcel() {
+        if(this.ordemServicos == undefined || this.ordemServicos.length == 0){
+            this.messageService.add({ severity: 'info', summary: 'Exportação não realizada', detail: "Não há dados disponíveis para exportar.", life: 4000 });
+            return
+        }
+
+        const worksheetData = this.ordemServicos.map((ordemServico: any) => ({
+            'Número OS': ordemServico.codigo,
+            'Tipo de Serviço': ordemServico.servico,
+            'Nome do Cliente': ordemServico.cliente?.nome,
+            'Data do Orçamento': ordemServico.dataOrcamento,
+            'Data de Entrega': ordemServico.dataEntrega,
+            'Situação do Serviço': ordemServico.status
+        }));
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Ordem de Serviços');
+
+        const excelBuffer: any = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array'
+        });
+
+        const today = new Date();
+        const formattedDate =
+            String(today.getDate()).padStart(2, '0') +
+            String(today.getMonth() + 1).padStart(2, '0') +
+            today.getFullYear();
+
+        const fileName = `ordem-servicos_${formattedDate}.xlsx`;
+
+        const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, fileName);
+
+        this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Exportação Concluída', 
+            detail: 'Os dados foram exportados com sucesso para o arquivo Excel.', 
+            life: 4000 
+        });
     }
 
 }

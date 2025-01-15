@@ -8,6 +8,8 @@ import { Cliente, ClientePage } from 'src/app/models/cliente.interface';
 import { Pageable } from 'src/app/models/pageable.interface';
 import { GlobalFilter } from './../../models/pageable.interface';
 import { ClienteService } from './../../services/cliente.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
     templateUrl: './clientesCadastro.component.html',
@@ -19,7 +21,7 @@ export class CadastroClientesComponent implements OnInit {
     clienteDialog: boolean = false;
     deleteClienteDialog: boolean = false;
     deleteClientesDialog: boolean = false;
-    clientes: ClientePage[] | undefined;
+    clientes!: ClientePage[];
     cliente: Cliente = {};
     selectedClientes: Cliente[] = [];
     submitted: boolean = false;
@@ -51,7 +53,7 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     private initializeBreadcrumb() {
-        this.items = [{ label: 'Clientes' }, { label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
+        this.items = [{ label: 'Clientes' }, { label: 'Gerenciamento de Clientes' }];
         this.home = { icon: 'pi pi-home', routerLink: '/dashboard' };
     }
 
@@ -78,7 +80,7 @@ export class CadastroClientesComponent implements OnInit {
 
     private handleError(error: any, message: string) {
         this.blockUI.stop();
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 3000 });
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 4000 });
         return of();
     }
 
@@ -97,7 +99,7 @@ export class CadastroClientesComponent implements OnInit {
             .subscribe(resp => {
                 this.blockUI.stop();
                 if (resp) {
-                    this.clientes = resp.content;
+                    this.clientes = resp.content || [];
                     this.totalRecords = resp.totalElements;
                 }
             });
@@ -126,7 +128,7 @@ export class CadastroClientesComponent implements OnInit {
             )
             .subscribe(resp => {
                 if (resp?.id) {
-                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente salvo com sucesso.', life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente salvo com sucesso.', life: 4000 });
                 }
                 this.resetFormAndCloseDialog();
                 this.pageClientes(this.pageable, this.filter);
@@ -141,7 +143,7 @@ export class CadastroClientesComponent implements OnInit {
             )
             .subscribe(resp => {
                 if (resp?.id) {
-                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente atualizado com sucesso.', life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente atualizado com sucesso.', life: 4000 });
                 }
                 this.resetFormAndCloseDialog();
                 this.pageClientes(this.pageable, this.filter);
@@ -172,7 +174,7 @@ export class CadastroClientesComponent implements OnInit {
         this.deleteClientes(ids);
     }
 
-    private deleteClientes(ids : any) {
+    private deleteClientes(ids: any) {
         this.blockUI.start('Carregando...');
         this.clienteService.deleteAll(ids)
             .pipe(
@@ -180,7 +182,7 @@ export class CadastroClientesComponent implements OnInit {
             )
             .subscribe(() => {
                 this.blockUI.stop();
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Clientes excluídos com sucesso.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Clientes excluídos com sucesso.', life: 4000 });
                 this.selectedClientes = [];
                 this.pageClientes(this.pageable, this.filter);
             });
@@ -201,7 +203,7 @@ export class CadastroClientesComponent implements OnInit {
             )
             .subscribe(() => {
                 this.blockUI.stop();
-                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente excluído com sucesso.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente excluído com sucesso.', life: 4000 });
                 this.pageClientes(this.pageable, this.filter);
             });
     }
@@ -229,4 +231,47 @@ export class CadastroClientesComponent implements OnInit {
         this.filter.filter = event.globalFilter
         this.pageClientes(this.pageable, this.filter);
     }
+
+    exportToExcel() {
+        if(this.clientes == undefined || this.clientes.length == 0){
+            this.messageService.add({ severity: 'info', summary: 'Exportação não realizada', detail: "Não há dados disponíveis para exportar.", life: 4000 });
+            return
+        }
+
+        const worksheetData = this.clientes.map((cliente: any) => ({
+            'Nome': cliente.nome,
+            'CPF': cliente.cpf,
+            'Email': cliente.email,
+            'Contato': cliente.celular
+        }));
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes');
+
+        const excelBuffer: any = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array'
+        });
+
+        const today = new Date();
+        const formattedDate =
+            String(today.getDate()).padStart(2, '0') +
+            String(today.getMonth() + 1).padStart(2, '0') +
+            today.getFullYear();
+
+        const fileName = `clientes_${formattedDate}.xlsx`;
+
+        const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, fileName);
+
+        this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Exportação Concluída', 
+            detail: 'Os dados foram exportados com sucesso para o arquivo Excel.', 
+            life: 4000 
+        });
+    }
+
 }

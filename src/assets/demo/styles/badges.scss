@@ -44,6 +44,15 @@
         background: #FEEDAF;
         color: #8A5340;
     }
+    &.type-venda {
+        background: #176db4;
+        color: #070707;
+    }
+
+    &.type-serviço {
+        background: #e77020;
+        color: #070707;
+    }
 }
 
 .customer-badge {

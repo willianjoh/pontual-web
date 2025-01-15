@@ -16,5 +16,27 @@ export class AppTopBarComponent {
 
     @ViewChild('topbarmenu') menu!: ElementRef;
 
-    constructor(public layoutService: LayoutService) {}
+    constructor(public layoutService: LayoutService) { }
+
+
+    ngOnInit() {
+        this.items = [
+            {
+                label: 'Minha conta',
+                icon: 'pi pi-fw pi-user',
+            },
+            {
+                label: 'Configurações',
+                icon: 'pi pi-fw pi-cog',
+            },
+            {
+                separator: true
+            },
+            {
+                label: 'Sair',
+                icon: 'pi pi-fw pi-power-off',
+                routerLink: ['/login']
+            }
+        ];
+    }
 }
