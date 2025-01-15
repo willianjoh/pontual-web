@@ -5466,6 +5466,7 @@ p-treeselect.p-treeselect-clearable .p-treeselect-clear-icon {
   border-radius: 0;
   transition: box-shadow 0.15s;
   user-select: none;
+  width: 175px;
 }
 .p-slidemenu .p-menuitem-link .p-menuitem-text {
   color: rgba(255, 255, 255, 0.87);

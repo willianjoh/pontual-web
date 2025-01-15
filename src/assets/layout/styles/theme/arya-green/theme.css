@@ -5453,7 +5453,8 @@ p-treeselect.p-treeselect-clearable .p-treeselect-clear-icon {
   color: rgba(255, 255, 255, 0.87);
   border-radius: 0;
   transition: box-shadow 0.2s;
-  user-select: none;
+  user-select: none; 
+  width: 175px;
 }
 .p-slidemenu .p-menuitem-link .p-menuitem-text {
   color: rgba(255, 255, 255, 0.87);
