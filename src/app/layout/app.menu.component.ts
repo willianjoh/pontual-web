@@ -27,7 +27,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Clientes', icon: 'pi pi-fw pi-users',
                         items: [
                             {
-                                label: 'Gerenciamento de Clientes', icon: 'pi pi-fw pi-users', routerLink: ['clientes/cadastro'],
+                                label: 'Gerenciamento de Clientes', icon: 'pi pi-fw pi-users', routerLink: ['customers'],
                             },
                             {
                                 label: 'Emitir relatório de clientes', icon: 'pi pi-fw pi-file-pdf',
@@ -43,7 +43,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Vendas', icon: 'pi pi-fw pi-chart-line',
                         items: [
                             {
-                                label: 'Gerenciamento de vendas', icon: 'pi pi-fw pi-chart-line', routerLink: ['vendas/cadastro'],
+                                label: 'Gerenciamento de vendas', icon: 'pi pi-fw pi-chart-line', routerLink: ['sales'],
                             },
                             {
                                 label: 'Emitir relatório de vendas', icon: 'pi pi-fw pi-file-pdf',
@@ -59,7 +59,7 @@ export class AppMenuComponent implements OnInit {
                         label: 'Ordem de Serviço', icon: 'pi pi-fw pi-wrench',
                         items: [
                             {
-                                label: 'Emitir ordem de serviço', icon: 'pi pi-fw pi-wrench', routerLink: ['ordem-servico/cadastro'],
+                                label: 'Emitir ordem de serviço', icon: 'pi pi-fw pi-wrench', routerLink: ['service-order'],
                             },
                             {
                                 label: 'Emitir relatório OS', icon: 'pi pi-fw pi-file-pdf',

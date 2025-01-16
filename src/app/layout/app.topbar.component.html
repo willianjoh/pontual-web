@@ -1,6 +1,6 @@
 <div class="layout-topbar">
     <a class="layout-topbar-logo" [routerLink]="'/dashboard'">
-        <img src="assets/layout/images/pontual-logo.png"  style="height: 70px; width: 183px; margin-top: 9px; margin-left: 5px;">
+        <img src="assets/layout/images/pontual-logo25.png"  style="height: 102px; width: 230px; margin-top: 9px; margin-left: 5px;">
     </a>
 
     <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
@@ -17,5 +17,5 @@
             <span>Perfil</span>
         </button>
     </div>
-    <p-slideMenu #menu [model]="items" [popup]="true" ></p-slideMenu>
+    <p-slideMenu [viewportHeight]="210" backLabel="Voltar" #menu [model]="items" [popup]="true" ></p-slideMenu>
 </div>

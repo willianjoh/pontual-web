@@ -13,9 +13,9 @@ import { LoginComponent } from './demo/components/auth/login/login.component';
                 children: [
                     { path: '', redirectTo: '/login', pathMatch: 'full' },
                     { path: 'dashboard', loadChildren: () => import('./demo/components/dashboard/dashboard.module').then(m => m.DashboardModule) },
-                    { path: 'clientes/cadastro', loadChildren: () => import('./pages/clientes/clientesCadastro.module').then(m => m.ClientesCadastroModule) },
-                    { path: 'vendas/cadastro', loadChildren: () => import('./pages/vendas/vendasCadastro.module').then(m => m.VendasCadastroModule) },
-                    { path: 'ordem-servico/cadastro', loadChildren: () => import('./pages/ordem-servico/ordemServicoCadastro.module').then(m => m.OrdemServicoCadastroModule) },
+                    { path: 'customers', loadChildren: () => import('./pages/clientes/clientesCadastro.module').then(m => m.ClientesCadastroModule) },
+                    { path: 'sales', loadChildren: () => import('./pages/vendas/vendasCadastro.module').then(m => m.VendasCadastroModule) },
+                    { path: 'service-order', loadChildren: () => import('./pages/ordem-servico/ordemServicoCadastro.module').then(m => m.OrdemServicoCadastroModule) },
                     { path: 'utilities', loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
                     { path: 'documentation', loadChildren: () => import('./demo/components/documentation/documentation.module').then(m => m.DocumentationModule) },
                     { path: 'blocks', loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule) },

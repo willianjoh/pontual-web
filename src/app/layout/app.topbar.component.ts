@@ -26,6 +26,25 @@ export class AppTopBarComponent {
                 icon: 'pi pi-fw pi-user',
             },
             {
+                label: 'Usuários',
+                icon: 'pi pi-fw pi-users',
+                items:[
+                    {
+                       label:'Cadastrar',
+                       icon:'pi pi-fw pi-user-plus'
+                    },
+                    {
+                        label:'Remover',
+                        icon:'pi pi-fw pi-user-minus'
+                    },
+                    {
+                        label:'Editar Permissões',
+                        icon:'pi pi-fw pi-user-edit'
+                    }
+                 ]
+                 
+            },
+            {
                 label: 'Configurações',
                 icon: 'pi pi-fw pi-cog',
             },
