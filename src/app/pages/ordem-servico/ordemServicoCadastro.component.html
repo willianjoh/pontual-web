@@ -14,10 +14,10 @@
                         [disabled]="!selectedOrdemServicos || !selectedOrdemServicos.length"></button>
                 </div>
                 <div class="p-toolbar-group-right">
-                    <p-button label="Exportar" icon="pi pi-file-excel" (click)="exportToExcel()"></p-button>
+                    <p-button label="Exportar" icon="pi pi-file-excel" (click)="exportExcel()"></p-button>
                 </div>
             </p-toolbar>
-            <p-table #dt [value]="ordemServicos!" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+            <p-table #dt [value]="ordemServicos!" responsiveLayout="scroll" [rows]="10"
                 [rowsPerPageOptions]="[10,20,30, 50]" [paginator]="true" [showCurrentPageReport]="true" [lazy]="true"
                 [totalRecords]="totalRecords" (onLazyLoad)="page($event)"
                 currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros"

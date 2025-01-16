@@ -20,4 +20,22 @@ export class CommonUtils {
         return "";
     }
 
+    static validarDatas(dataOrcamento: string | null, dataEntrega: string | null): boolean {
+        if (!dataOrcamento || !dataEntrega) {
+            return false;
+        }
+
+        try {
+            const [diaOrc, mesOrc, anoOrc] = dataOrcamento.split('/').map(Number);
+            const dataOrcamentoObj = new Date(anoOrc, mesOrc - 1, diaOrc);
+
+            const [diaEnt, mesEnt, anoEnt] = dataEntrega.split('/').map(Number);
+            const dataEntregaObj = new Date(anoEnt, mesEnt - 1, diaEnt);
+
+            return dataEntregaObj >= dataOrcamentoObj;
+        } catch (error) {
+            return false;
+        }
+    }
+
 }

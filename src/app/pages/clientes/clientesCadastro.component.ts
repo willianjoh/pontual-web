@@ -80,7 +80,7 @@ export class CadastroClientesComponent implements OnInit {
 
     private handleError(error: any, message: string) {
         this.blockUI.stop();
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 4000 });
+        this.messageService.add({ severity: 'error', summary: 'Ocorreu um erro', detail: message, life: 4000 });
         return of();
     }
 
@@ -124,7 +124,7 @@ export class CadastroClientesComponent implements OnInit {
         this.blockUI.start('Carregando...');
         this.clienteService.save(this.formGroup.value)
             .pipe(
-                catchError(error => this.handleError(error, 'Erro ao salvar o cliente.'))
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(resp => {
                 if (resp?.id) {
@@ -139,7 +139,7 @@ export class CadastroClientesComponent implements OnInit {
         this.blockUI.start('Carregando...');
         this.clienteService.update(this.cliente)
             .pipe(
-                catchError(error => this.handleError(error, 'Erro ao atualizar o cliente.'))
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(resp => {
                 if (resp?.id) {
@@ -178,7 +178,7 @@ export class CadastroClientesComponent implements OnInit {
         this.blockUI.start('Carregando...');
         this.clienteService.deleteAll(ids)
             .pipe(
-                catchError(error => this.handleError(error, 'Erro ao excluir os clientes.'))
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(() => {
                 this.blockUI.stop();
@@ -199,7 +199,7 @@ export class CadastroClientesComponent implements OnInit {
         this.blockUI.start('Carregando...');
         this.clienteService.delete(id)
             .pipe(
-                catchError(error => this.handleError(error, 'Erro ao excluir o cliente.'))
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(() => {
                 this.blockUI.stop();
@@ -233,7 +233,7 @@ export class CadastroClientesComponent implements OnInit {
     }
 
     exportToExcel() {
-        if(this.clientes == undefined || this.clientes.length == 0){
+        if (this.clientes == undefined || this.clientes.length == 0) {
             this.messageService.add({ severity: 'info', summary: 'Exportação não realizada', detail: "Não há dados disponíveis para exportar.", life: 4000 });
             return
         }
@@ -266,11 +266,11 @@ export class CadastroClientesComponent implements OnInit {
         const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
         saveAs(data, fileName);
 
-        this.messageService.add({ 
-            severity: 'success', 
-            summary: 'Exportação Concluída', 
-            detail: 'Os dados foram exportados com sucesso para o arquivo Excel.', 
-            life: 4000 
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Exportação Concluída',
+            detail: 'Os dados foram exportados com sucesso para o arquivo Excel.',
+            life: 4000
         });
     }
 

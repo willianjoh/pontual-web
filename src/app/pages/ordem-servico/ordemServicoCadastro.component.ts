@@ -54,8 +54,6 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     formaPagamento: any[] = [];
 
-    rowsPerPageOptions = [5, 10, 20];
-
     items: MenuItem[] = [];
 
     parcelas: any[] = [];
@@ -149,14 +147,9 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.blockUI.start('Carregando...')
         this.clienteService.getAllClientes()
             .pipe(
-                catchError(error => {
-                    this.blockUI.stop();
-                    if (error == 500 || error == 400) {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
-                    }
-                    return of();
-                })
-            ).subscribe(resp => {
+                catchError(error => this.handleError(error, error.message))
+            )
+            .subscribe(resp => {
                 this.clientes = resp;
                 this.blockUI.stop();
             });
@@ -253,7 +246,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.blockUI.start('Carregando...');
         this.ordemServicoService.deleteAll(ids)
             .pipe(
-                catchError(error => this.handleError(error, 'Erro ao excluir Ordens de Serviços.'))
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(() => {
                 this.blockUI.stop();
@@ -274,7 +267,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.blockUI.start('Carregando...');
         this.ordemServicoService.delete(id)
             .pipe(
-                catchError(error => this.handleError(error, 'Erro ao excluir o ordem de serviço.'))
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(() => {
                 this.blockUI.stop();
@@ -290,6 +283,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
     }
 
     hideDialog() {
+        this.blockUI.stop();
         this.formGroup.reset()
         this.ordemServicoDialog = false;
         this.submitted = false;
@@ -332,18 +326,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
                 this.ordemServicoService.save(this.ordemServico)
                     .pipe(
-                        catchError(error => {
-                            this.blockUI.stop();
-                            if (error == 409) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Usuário já existe na base de dados.", life: 4000 });
-                            }
-                            if (error == 500) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
-                            }
-                            this.formGroup.reset()
-                            this.hideDialog()
-                            return of();
-                        })
+                        catchError(error => this.handleError(error, error.message))
                     )
                     .subscribe(resp => {
                         if (resp.id != null) {
@@ -384,26 +367,13 @@ export class OrdemServicoProdutosComponent implements OnInit {
             if (this.validarDatas(this.ordemServico.dataOrcamento, this.ordemServico.dataEntrega)) {
                 this.ordemServicoService.update(this.ordemServico)
                     .pipe(
-                        catchError(error => {
-                            this.blockUI.stop();
-                            if (error === 409) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Orçamento já existe na base de dados.", life: 4000 });
-                            }
-                            if (error === 500 || error === 400) {
-                                this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
-                            }
-                            this.formGroup.reset();
-                            this.hideDialog();
-                            return of();
-                        })
+                        catchError(error => this.handleError(error, error.message))
                     )
                     .subscribe(resp => {
                         if (resp.id != null) {
                             this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso.', life: 4000 });
                         }
-                        this.formGroup.reset();
                         this.hideDialog();
-                        this.blockUI.stop();
                         this.pageOrdemServicos(this.pageable, this.filter);
                     });
             }
@@ -421,46 +391,39 @@ export class OrdemServicoProdutosComponent implements OnInit {
 
     private validarDatas(dataOrcamento: string | null, dataEntrega: string | null): boolean {
         if (!dataOrcamento || !dataEntrega) {
-            return false; // Caso uma das datas seja nula, retorna inválido
+            return false;
         }
 
         try {
-            // Converte as datas para objetos Date
             const [diaOrc, mesOrc, anoOrc] = dataOrcamento.split('/').map(Number);
             const dataOrcamentoObj = new Date(anoOrc, mesOrc - 1, diaOrc);
 
             const [diaEnt, mesEnt, anoEnt] = dataEntrega.split('/').map(Number);
             const dataEntregaObj = new Date(anoEnt, mesEnt - 1, diaEnt);
 
-            // Retorna true se a data de entrega for igual ou posterior à data de orçamento
             return dataEntregaObj >= dataOrcamentoObj;
         } catch (error) {
-            return false; // Retorna inválido em caso de erro
+            return false;
         }
     }
 
 
     private formatData(data: string | Date | null): string {
         if (!data) {
-            return ''; // Retorna string vazia se a entrada for nula ou indefinida
+            return '';
         }
 
         try {
             let date: Date;
-
-            // Se já for um objeto Date, usa diretamente
             if (data instanceof Date) {
                 date = data;
             } else if (/\d{2}\/\d{2}\/\d{4}/.test(data)) {
-                // Verifica se está no formato dd/MM/yyyy
                 const [day, month, year] = data.split('/').map(Number);
-                date = new Date(year, month - 1, day); // Converte para um objeto Date
+                date = new Date(year, month - 1, day);
             } else {
-                // Tenta converter a string para um objeto Date
                 date = new Date(data);
             }
 
-            // Verifica se a data é válida
             if (!isNaN(date.getTime())) {
                 const day = date.getDate().toString().padStart(2, '0');
                 const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -468,9 +431,9 @@ export class OrdemServicoProdutosComponent implements OnInit {
                 return `${day}/${month}/${year}`;
             }
 
-            return ''; // Retorna string vazia se a data não for válida
+            return '';
         } catch (error) {
-            return ''; // Retorna string vazia em caso de erro
+            return '';
         }
     }
 
@@ -479,13 +442,7 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.blockUI.start('Carregando...')
         this.ordemServicoService.buscarOrdemServicos(pageable, filter)
             .pipe(
-                catchError(error => {
-                    if (error == 500) {
-                        this.blockUI.stop();
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: "Ocorreu um erro inesperado.", life: 4000 });
-                    }
-                    return of();
-                })
+                catchError(error => this.handleError(error, error.message))
             )
             .subscribe(resp => {
                 if (resp != null) {
@@ -516,8 +473,8 @@ export class OrdemServicoProdutosComponent implements OnInit {
         this.pageOrdemServicos(this.pageable, this.filter)
     }
 
-    exportToExcel() {
-        if(this.ordemServicos == undefined || this.ordemServicos.length == 0){
+    exportExcel() {
+        if (this.ordemServicos == undefined || this.ordemServicos.length == 0) {
             this.messageService.add({ severity: 'info', summary: 'Exportação não realizada', detail: "Não há dados disponíveis para exportar.", life: 4000 });
             return
         }
@@ -552,11 +509,11 @@ export class OrdemServicoProdutosComponent implements OnInit {
         const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
         saveAs(data, fileName);
 
-        this.messageService.add({ 
-            severity: 'success', 
-            summary: 'Exportação Concluída', 
-            detail: 'Os dados foram exportados com sucesso para o arquivo Excel.', 
-            life: 4000 
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Exportação Concluída',
+            detail: 'Os dados foram exportados com sucesso para o arquivo Excel.',
+            life: 4000
         });
     }
 

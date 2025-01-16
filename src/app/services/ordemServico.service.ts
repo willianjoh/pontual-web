@@ -55,16 +55,23 @@ export class OrdemServicoService {
         catchError(this.handleError)
       );
   }
+  
   handleError(error: HttpErrorResponse) {
-    let errorCode;
+    let errorResponse = {
+      status: error.status,
+      message: 'Ocorreu um erro desconhecido',
+      path: null,
+    };
+  
     if (error.error instanceof ErrorEvent) {
-      // Erro ocorreu no lado do client
-      errorCode = error.error.message;
+      errorResponse.message = error.error.message;
     } else {
-      // Erro ocorreu no lado do servidor
-      errorCode = error.status;
+      if (error.error) {
+        errorResponse.message = error.error.message || error.message;
+        errorResponse.path = error.error.path || null;
+      }
     }
-    return throwError(errorCode);
-  };
+    return throwError(() => errorResponse);
+  }
 
 }
